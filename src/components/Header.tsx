@@ -11,9 +11,8 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
   const { adminUser } = useAdminAuth();
   const location = useLocation();
 
-  // Theme state and toggle logic
   const [theme, setTheme] = React.useState(
-    () => localStorage.getItem('kitabon_theme') || 
+    () => localStorage.getItem('kitabon_theme') ||
     (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
   );
 
@@ -32,7 +31,6 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  // Determine section title from path
   const getSectionTitle = () => {
     const path = location.pathname;
     if (path.includes('/dashboard')) return 'Dashboard Overview';
@@ -47,15 +45,18 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
   return (
     <header className="admin-header">
       <div className="admin-header-left">
-        <button className="admin-menu-toggle" onClick={() => setIsMobileOpen(true)}>
+        <button className="admin-menu-toggle" onClick={() => setIsMobileOpen(true)} aria-label="Open admin navigation">
           <MenuIcon size={24} />
         </button>
-        <h1 className="admin-header-title">{getSectionTitle()}</h1>
+        <div className="admin-header-title-group">
+          <span className="admin-header-eyebrow">Kitabon Ki Dolat</span>
+          <h1 className="admin-header-title">{getSectionTitle()}</h1>
+        </div>
       </div>
 
-      <div className="admin-header-right" style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
-        <button 
-          onClick={toggleTheme} 
+      <div className="admin-header-right">
+        <button
+          onClick={toggleTheme}
           className="admin-theme-toggle-btn"
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           type="button"
@@ -81,8 +82,8 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
 
         {adminUser && (
           <div className="admin-header-user-profile">
-            <div className="admin-user-avatar">
-              ✍️
+            <div className="admin-user-avatar" aria-hidden="true">
+              {'\u270d\ufe0f'}
             </div>
             <div className="admin-user-info">
               <span className="admin-user-name">{adminUser.name}</span>

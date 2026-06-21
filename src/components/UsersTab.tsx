@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAdminAuth } from '../context/AuthContext';
 import type { User } from '../context/AuthContext';
-import { SearchIcon, PlusIcon, CloseIcon } from './Icons';
+import { SearchIcon, CloseIcon } from './Icons';
 
 export const UsersTab: React.FC = () => {
   const { users, toggleUserStatus, deleteUser, addUser, booksList } = useAdminAuth();
@@ -18,7 +18,7 @@ export const UsersTab: React.FC = () => {
   // Form State for Adding User
   const [newUserName, setNewUserName] = useState('');
   const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'User' | 'Moderator' | 'Admin'>('User');
+  const [newUserRole, setNewUserRole] = useState<'User' | 'Admin'>('User');
   const [newUserSub, setNewUserSub] = useState<'Monthly' | 'Quarterly' | 'Half-Yearly' | '9-Month Plan' | 'Annual' | 'None'>('None');
   const [newUserAvatar, setNewUserAvatar] = useState('🧑‍💻');
 
@@ -83,7 +83,6 @@ export const UsersTab: React.FC = () => {
           >
             <option value="All">All Roles</option>
             <option value="Admin">Admin</option>
-            <option value="Moderator">Moderator</option>
             <option value="User">User</option>
           </select>
 
@@ -98,10 +97,6 @@ export const UsersTab: React.FC = () => {
           </select>
         </div>
 
-        <button className="admin-btn-action-primary" onClick={() => setShowAddModal(true)}>
-          <PlusIcon size={18} />
-          <span>Add User</span>
-        </button>
       </div>
 
       {/* Responsive Table */}
@@ -131,17 +126,15 @@ export const UsersTab: React.FC = () => {
                     </div>
                   </td>
                   <td>
-                    <span className={`admin-badge badge-role-${user.role.toLowerCase().slice(0, 3)}`}>
-                      {user.role}
+                    <span className="admin-badge badge-role-user">
+                      User
                     </span>
                   </td>
                   <td>
                     <span style={{ color: 'var(--text-dim)' }}>{user.joinedDate}</span>
                   </td>
                   <td>
-                    <span className={`admin-badge badge-sub-${user.subscription.toLowerCase().split(' ')[0]}`}>
-                      {user.subscription}
-                    </span>
+                    <span>{user.subscription}</span>
                   </td>
                   <td>
                     <span className={`admin-badge ${user.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>
@@ -202,6 +195,10 @@ export const UsersTab: React.FC = () => {
                   <div className="admin-user-details-main">
                     <h4>{selectedUser.name}</h4>
                     <p style={{ color: 'var(--text-dim)' }}>{selectedUser.email}</p>
+                    <div className="admin-user-profile-chips">
+                      <span className="admin-badge badge-role-user">User</span>
+                      <span className={`admin-badge ${selectedUser.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>{selectedUser.status}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -212,7 +209,7 @@ export const UsersTab: React.FC = () => {
                   </div>
                   <div className="admin-user-detail-item">
                     <label>Security Role</label>
-                    <p>{selectedUser.role}</p>
+                    <p><span className="admin-badge badge-role-user">User</span></p>
                   </div>
                   <div className="admin-user-detail-item">
                     <label>Joined Date</label>
@@ -224,7 +221,7 @@ export const UsersTab: React.FC = () => {
                   </div>
                   <div className="admin-user-detail-item">
                     <label>Account Status</label>
-                    <p>{selectedUser.status}</p>
+                    <p><span className={`admin-badge ${selectedUser.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>{selectedUser.status}</span></p>
                   </div>
                 </div>
 
@@ -333,7 +330,6 @@ export const UsersTab: React.FC = () => {
                       onChange={(e) => setNewUserRole(e.target.value as any)}
                     >
                       <option value="User">User</option>
-                      <option value="Moderator">Moderator</option>
                       <option value="Admin">Admin</option>
                     </select>
                   </div>

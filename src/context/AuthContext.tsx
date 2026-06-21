@@ -5,7 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'User' | 'Moderator' | 'Admin';
+  role: 'User' | 'Admin';
   joinedDate: string;
   subscription: 'Monthly' | 'Quarterly' | 'Half-Yearly' | '9-Month Plan' | 'Annual' | 'None';
   status: 'Active' | 'Suspended';
@@ -118,7 +118,7 @@ const initialUsers: User[] = [
   { id: 'usr-102', name: 'Fatima Zahra', email: 'fatima.zahra@yahoo.com', role: 'User', joinedDate: '2026-02-14', subscription: 'Annual', status: 'Active', avatar: '👩‍⚕️', purchasedBooks: [1, 3, 4] },
   { id: 'usr-103', name: 'Bilal Ahmed', email: 'bilal.ahmed@gmail.com', role: 'User', joinedDate: '2025-11-20', subscription: 'None', status: 'Suspended', avatar: '👨‍💼', purchasedBooks: [] },
   { id: 'usr-104', name: 'Dolat Khan Kakar', email: 'author@kitabondolat.com', role: 'Admin', joinedDate: '2025-05-01', subscription: 'Annual', status: 'Active', avatar: '✍️', purchasedBooks: [1, 2, 3, 4] },
-  { id: 'usr-105', name: 'Zainab Bibi', email: 'zainab.bibi@gmail.com', role: 'Moderator', joinedDate: '2026-03-01', subscription: 'Quarterly', status: 'Active', avatar: '👩‍🏫', purchasedBooks: [3] },
+  { id: 'usr-105', name: 'Zainab Bibi', email: 'zainab.bibi@gmail.com', role: 'User', joinedDate: '2026-03-01', subscription: 'Quarterly', status: 'Active', avatar: '👩‍🏫', purchasedBooks: [3] },
   { id: 'usr-106', name: 'Hamza Siddiqui', email: 'hamza.s@gmail.com', role: 'User', joinedDate: '2026-05-18', subscription: '9-Month Plan', status: 'Active', avatar: '👨‍🎨', purchasedBooks: [2, 4] }
 ];
 
