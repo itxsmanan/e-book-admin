@@ -1,0 +1,23 @@
+{
+  "name": "Kitabon Ki Dolat",
+  "short_name": "کتابوں کی دولت",
+  "description": "Pakistan's premier platform for quality literature by Dolat Khan Kakar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05071A",
+  "theme_color": "#C9A962",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
