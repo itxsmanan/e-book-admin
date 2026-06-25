@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-import { useAdminAuth } from '../context/AuthContext';
-import type { SubscriptionPlan } from '../context/AuthContext';
-import { CloseIcon } from './Icons';
+import React, { useState } from "react";
+import { useAdminAuth } from "../context/AuthContext";
+import type { SubscriptionPlan } from "../context/AuthContext";
+import { CloseIcon } from "./Icons";
+import { tw } from "./adminTailwind";
 
 export const SubscriptionsTab: React.FC = () => {
   const { plansList, updatePlan } = useAdminAuth();
-
-  // Modal State
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
-  
-  // Form State
-  const [price, setPrice] = useState<number>(0);
-  const [saveText, setSaveText] = useState('');
-  const [badge, setBadge] = useState('');
-  const [features, setFeatures] = useState<string>('');
+  const [price, setPrice] = useState(0);
+  const [saveText, setSaveText] = useState("");
+  const [badge, setBadge] = useState("");
+  const [features, setFeatures] = useState("");
   const [isPopular, setIsPopular] = useState(false);
   const [isGold, setIsGold] = useState(false);
 
@@ -21,8 +18,8 @@ export const SubscriptionsTab: React.FC = () => {
     setEditingPlan(plan);
     setPrice(plan.price);
     setSaveText(plan.saveText);
-    setBadge(plan.badge || '');
-    setFeatures(plan.features.join('\n'));
+    setBadge(plan.badge || "");
+    setFeatures(plan.features.join("\n"));
     setIsPopular(plan.isPopular);
     setIsGold(plan.isGold);
   };
@@ -35,153 +32,146 @@ export const SubscriptionsTab: React.FC = () => {
       price,
       saveText,
       badge: badge || undefined,
-      features: features.split('\n').filter(f => f.trim() !== ''),
+      features: features.split("\n").filter((f) => f.trim() !== ""),
       isPopular,
-      isGold
+      isGold,
     });
 
     setEditingPlan(null);
   };
 
   return (
-    <div>
-      {/* Informative top section */}
-      <div style={{ background: 'rgba(201, 169, 98, 0.05)', border: '1px dashed rgba(201, 169, 98, 0.2)', padding: '1.2rem', borderRadius: '8px', marginBottom: '2rem', fontSize: '0.9rem', color: 'var(--text-dim)' }}>
-        💬 <strong>Membership Tiers Configurator:</strong> Updates to these pricing structures and perk lists dynamically overwrite the website's landing page cards.
+    <div className="grid gap-6">
+      <div className={tw.notice}>
+        <strong className="text-gold-bright">Membership Tiers Configurator:</strong>{" "}
+        Updates to pricing structures and perk lists dynamically overwrite the
+        website landing page cards.
       </div>
 
-      {/* Grid of Plans */}
-      <div className="admin-plans-grid">
-        {plansList.map((plan, idx) => (
-          <div key={idx} className={`admin-plan-card ${plan.isPopular ? 'popular' : ''}`}>
-            {plan.badge && <span className="admin-plan-badge">{plan.badge}</span>}
-            <h3 className="admin-plan-name">{plan.name}</h3>
-            
-            <div className="admin-plan-price">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,230px),1fr))] gap-5">
+        {plansList.map((plan) => (
+          <article
+            key={plan.name}
+            className={`${tw.card} relative flex flex-col p-5 ${
+              plan.isPopular ? "border-gold/40 shadow-[0_18px_48px_rgba(201,169,98,0.12)]" : ""
+            }`}
+          >
+            {plan.badge && (
+              <span className="mb-4 w-fit rounded-full bg-gold px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-midnight">
+                {plan.badge}
+              </span>
+            )}
+            <h3 className="text-xl font-extrabold text-text-main">{plan.name}</h3>
+            <div className="mt-4 text-3xl font-black text-gold-bright">
               Rs. {plan.price.toLocaleString()}
-              <span>{plan.period}</span>
+              <span className="ml-1 text-sm font-semibold text-text-dim">{plan.period}</span>
             </div>
-            
-            <p className="admin-plan-save">{plan.saveText}</p>
-            
-            <ul className="admin-plan-features-list">
-              {plan.features.map((feature, fIdx) => (
-                <li key={fIdx}>{feature}</li>
+            <p className="mt-2 text-sm font-semibold text-accent-light">{plan.saveText}</p>
+            <ul className="my-5 grid gap-3 text-sm text-text-dim">
+              {plan.features.map((feature) => (
+                <li key={feature} className="flex gap-2">
+                  <span className="text-gold">✓</span>
+                  <span>{feature}</span>
+                </li>
               ))}
             </ul>
-
-            <button className="admin-plan-edit-btn" onClick={() => handleOpenEdit(plan)}>
+            <button className={`${tw.secondaryBtn} mt-auto`} onClick={() => handleOpenEdit(plan)}>
               Edit Plan Tier
             </button>
-          </div>
+          </article>
         ))}
       </div>
 
-      {/* Edit Plan Modal */}
       {editingPlan && (
-        <div className="admin-modal-overlay" onClick={() => setEditingPlan(null)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3>Edit {editingPlan.name} Plan Details</h3>
-              <button className="admin-modal-close" onClick={() => setEditingPlan(null)}>
+        <div className={tw.modalOverlay} onClick={() => setEditingPlan(null)}>
+          <div className={tw.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={tw.modalHeader}>
+              <h3 className={tw.modalTitle}>Edit {editingPlan.name} Plan Details</h3>
+              <button className={tw.iconBtn} onClick={() => setEditingPlan(null)} type="button">
                 <CloseIcon size={20} />
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="admin-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                
-                <div className="admin-form-group">
-                  <label>Plan Price (Rs.)</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="number" 
-                      placeholder="e.g. 499"
-                      value={price}
-                      onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
+
+            <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
+              <div className={tw.modalBody}>
+                <label className={tw.field}>
+                  <span>Plan Price (Rs.)</span>
+                  <input
+                    className={tw.input}
+                    type="number"
+                    placeholder="e.g. 499"
+                    value={price}
+                    onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
+                    required
+                  />
+                </label>
+
+                <label className={tw.field}>
+                  <span>Savings / Highlight Text</span>
+                  <input
+                    className={tw.input}
+                    type="text"
+                    placeholder="e.g. Save 20% - Rs. 400/month"
+                    value={saveText}
+                    onChange={(e) => setSaveText(e.target.value)}
+                    required
+                  />
+                </label>
+
+                <label className={tw.field}>
+                  <span>Plan Highlight Badge</span>
+                  <input
+                    className={tw.input}
+                    type="text"
+                    placeholder="e.g. Most Popular"
+                    value={badge}
+                    onChange={(e) => setBadge(e.target.value)}
+                  />
+                </label>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="flex items-center gap-3 rounded-xl border border-text-main/10 bg-midnight/25 p-4 text-sm font-semibold text-text-main">
+                    <input
+                      type="checkbox"
+                      checked={isPopular}
+                      onChange={(e) => setIsPopular(e.target.checked)}
                     />
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Savings / Highlight Text</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Save 20% • Rs. 400/month"
-                      value={saveText}
-                      onChange={(e) => setSaveText(e.target.value)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
+                    Highlight Card
+                  </label>
+                  <label className="flex items-center gap-3 rounded-xl border border-text-main/10 bg-midnight/25 p-4 text-sm font-semibold text-text-main">
+                    <input
+                      type="checkbox"
+                      checked={isGold}
+                      onChange={(e) => setIsGold(e.target.checked)}
                     />
-                  </div>
+                    Gold Accent Button
+                  </label>
                 </div>
 
-                <div className="admin-form-group">
-                  <label>Plan Highlight Badge</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Most Popular or Best Deal (Leave blank if none)"
-                      value={badge}
-                      onChange={(e) => setBadge(e.target.value)}
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="admin-form-group">
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', textTransform: 'none' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={isPopular} 
-                        onChange={(e) => setIsPopular(e.target.checked)}
-                        style={{ width: 'auto', outline: 'none' }}
-                      />
-                      <span>Highlight Card (Border color)</span>
-                    </label>
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', textTransform: 'none' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={isGold} 
-                        onChange={(e) => setIsGold(e.target.checked)}
-                        style={{ width: 'auto', outline: 'none' }}
-                      />
-                      <span>Gold Accent Button</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Plan Perks / Features (One per line)</label>
-                  <textarea 
-                    placeholder="e.g.&#10;Full E-Library access&#10;Unlimited book downloads&#10;Audio book streaming"
+                <label className={tw.field}>
+                  <span>Plan Perks / Features (One per line)</span>
+                  <textarea
+                    className={tw.textarea}
+                    placeholder={"Full E-Library access\nUnlimited book downloads\nAudio book streaming"}
                     value={features}
                     onChange={(e) => setFeatures(e.target.value)}
                     required
-                    style={{ minHeight: '150px' }}
                   />
-                </div>
-
+                </label>
               </div>
-              <div className="admin-modal-footer">
-                <button type="submit" className="admin-btn-action-primary" style={{ padding: '0.7rem 1.5rem' }}>
-                  Update Plan
-                </button>
-                <button type="button" className="admin-btn-secondary" onClick={() => setEditingPlan(null)}>
+
+              <div className={tw.modalFooter}>
+                <button className={tw.secondaryBtn} type="button" onClick={() => setEditingPlan(null)}>
                   Cancel
+                </button>
+                <button className={tw.primaryBtn} type="submit">
+                  Update Plan
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 };

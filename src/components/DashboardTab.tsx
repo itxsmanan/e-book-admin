@@ -51,23 +51,12 @@ export const DashboardTab: React.FC = () => {
   // Recent simulated actions
   const recentActivities = [
     {
-      type: "user",
-      text: 'Ali Khan downloaded "The Silent Echo" ebook.',
-      time: "10 minutes ago",
-      avatar: "🧑‍💻",
-    },
-    {
       type: "sub",
       text: "Fatima Zahra renewed her Annual membership.",
       time: "1 hour ago",
       avatar: "👩‍⚕️",
     },
-    {
-      type: "event",
-      text: 'Admin updated details for "Supreme Court Book Launch".',
-      time: "3 hours ago",
-      avatar: "✍️",
-    },
+
     {
       type: "inquiry",
       text: 'New support ticket: "Payment issue via EasyPaisa" by Amna Malik.',
@@ -83,82 +72,72 @@ export const DashboardTab: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+    <div className="flex flex-col gap-5 sm:gap-8">
       {/* Metrics Row */}
-      <div className="admin-stats-grid">
-        <div className="admin-stat-card">
-          <div className="admin-stat-icon icon-blue">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] sm:gap-6">
+        <div className="flex items-center gap-4 rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:border-gold/20 hover:bg-slate/60 hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:p-6">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#38bdf81f] text-[#38bdf8]">
             <UsersIcon size={24} />
           </div>
-          <div className="admin-stat-info">
-            <h3>Total Users</h3>
-            <div className="admin-stat-number">{totalUsers}</div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-dim)",
-                marginTop: "0.2rem",
-              }}
-            >
+          <div className="min-w-0 flex flex-col">
+            <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-text-dim">
+              Total Users
+            </h3>
+            <div className="text-2xl font-extrabold text-text-main">
+              {totalUsers}
+            </div>
+            <div className="mt-1 text-sm text-text-dim">
               {activeUsers} Active • {suspendedUsers} Suspended
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-icon icon-gold">
+        <div className="flex items-center gap-4 rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:border-gold/20 hover:bg-slate/60 hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:p-6">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold">
             <SubscriptionIcon size={24} />
           </div>
-          <div className="admin-stat-info">
-            <h3>Active Revenue</h3>
-            <div className="admin-stat-number">
+          <div className="min-w-0 flex flex-col">
+            <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-text-dim">
+              Active Revenue
+            </h3>
+            <div className="break-words text-2xl font-extrabold text-text-main">
               Rs. {activeSubscriptionRevenue.toLocaleString()}
             </div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-dim)",
-                marginTop: "0.2rem",
-              }}
-            >
+            <div className="mt-1 text-sm text-text-dim">
               Sign-ups Monthly Value
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-icon icon-green">
+        <div className="flex items-center gap-4 rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:border-gold/20 hover:bg-slate/60 hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:p-6">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#34d3991f] text-[#34d399]">
             <BooksIcon size={24} />
           </div>
-          <div className="admin-stat-info">
-            <h3>Books Catalog</h3>
-            <div className="admin-stat-number">{libraryBooks}</div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-dim)",
-                marginTop: "0.2rem",
-              }}
-            >
+          <div className="min-w-0 flex flex-col">
+            <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-text-dim">
+              Books Catalog
+            </h3>
+            <div className="text-2xl font-extrabold text-text-main">
+              {libraryBooks}
+            </div>
+            <div className="mt-1 text-sm text-text-dim">
               Ebooks & Printed copies
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="admin-stat-icon icon-accent">
+        <div className="flex items-center gap-4 rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] transition-all duration-300 hover:-translate-y-1 hover:border-gold/20 hover:bg-slate/60 hover:shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:p-6">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent-light">
             <EventsIcon size={24} />
           </div>
-          <div className="admin-stat-info">
-            <h3>Literary Events</h3>
-            <div className="admin-stat-number">{eventsCount}</div>
-            <div
-              style={{
-                fontSize: "0.8rem",
-                color: "var(--text-dim)",
-                marginTop: "0.2rem",
-              }}
-            >
+          <div className="min-w-0 flex flex-col">
+            <h3 className="mb-1 text-sm font-semibold uppercase tracking-wider text-text-dim">
+              Literary Events
+            </h3>
+            <div className="text-2xl font-extrabold text-text-main">
+              {eventsCount}
+            </div>
+            <div className="mt-1 text-sm text-text-dim">
               Launches & Meetups
             </div>
           </div>
@@ -167,8 +146,8 @@ export const DashboardTab: React.FC = () => {
 
       {/* Pending Tasks Banner */}
       {pendingInquiries > 0 && (
-        <div className="admin-alert-banner">
-          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
+        <div className="bg-accent/10 border border-accent/20 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap text-text-main text-[0.95rem] shadow-[0_10px_20px_rgba(212,102,74,0.08)]">
+          <div className="flex items-center gap-[0.8rem]">
             <InquiriesIcon size={20} />
             <span>
               You have{" "}
@@ -183,47 +162,60 @@ export const DashboardTab: React.FC = () => {
       )}
 
       {/* Main Charts & Activity Row */}
-      <div className="admin-charts-grid">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[2fr_1fr] lg:gap-6">
         {/* Subscription stats */}
-        <div className="admin-chart-card">
-          <h3>Active Subscriptions Distribution</h3>
-          <div className="admin-bar-chart">
+        <div className="overflow-hidden rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] sm:p-6">
+          <h3 className="text-[1.1rem] font-semibold text-text-main mb-6 flex items-center justify-between">
+            Active Subscriptions Distribution
+          </h3>
+          <div className="mb-4 flex h-[190px] items-end justify-between gap-2 overflow-x-auto border-b border-text-main/10 pt-4 sm:h-[200px] sm:gap-0">
             {subscriptionCounts.map((sub, index) => {
               const heightPercent = `${(sub.count / maxCount) * 150 + 20}px`;
               return (
-                <div key={index} className="admin-chart-bar-wrapper">
+                <div
+                  key={index}
+                  className="group relative flex min-w-12 flex-1 flex-col items-center gap-2"
+                >
+                  <div className="absolute -top-6 text-[0.75rem] font-semibold text-gold-bright opacity-0 transition-opacity duration-200 group-hover:opacity-100 whitespace-nowrap">
+                    {sub.count} user{sub.count !== 1 ? "s" : ""}
+                  </div>
                   <div
-                    className="admin-chart-bar"
+                    className="w-8 rounded-t-md bg-gradient-to-t from-slate to-gold transition-all duration-[1s] group-hover:from-navy group-hover:to-gold-bright"
                     style={{ height: heightPercent }}
-                    data-value={`${sub.count} user${sub.count !== 1 ? "s" : ""}`}
                   />
-                  <span className="admin-chart-label">{sub.name}</span>
+                  <span className="max-w-16 truncate text-[0.7rem] text-text-dim sm:text-[0.75rem]">
+                    {sub.name}
+                  </span>
                 </div>
               );
             })}
           </div>
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "var(--text-dim)",
-              textAlign: "center",
-              marginTop: "1rem",
-            }}
-          >
+          <p className="text-[0.85rem] text-text-dim text-center mt-4">
             Hover bars to see exact active reader counts per tier
           </p>
         </div>
 
         {/* Live Logs */}
-        <div className="admin-chart-card">
-          <h3>Recent Site Activities</h3>
-          <div className="admin-activity-list">
+        <div className="rounded-2xl border border-text-main/5 bg-slate/40 p-4 shadow-[0_8px_16px_rgba(0,0,0,0.15)] sm:p-6">
+          <h3 className="text-[1.1rem] font-semibold text-text-main mb-6 flex items-center justify-between">
+            Recent Site Activities
+          </h3>
+          <div className="flex flex-col gap-4">
             {recentActivities.map((act, index) => (
-              <div key={index} className="admin-activity-item">
-                <div className="admin-activity-avatar">{act.avatar}</div>
-                <div className="admin-activity-details">
-                  <div className="admin-activity-text">{act.text}</div>
-                  <div className="admin-activity-time">{act.time}</div>
+              <div
+                key={index}
+                className="flex items-center gap-4 pb-[0.8rem] border-b border-text-main/[0.03] last:border-b-0 last:pb-0"
+              >
+                <div className="w-9 h-9 rounded-full bg-navy flex items-center justify-center text-base">
+                  {act.avatar}
+                </div>
+                <div className="flex-grow">
+                  <div className="text-[0.85rem] text-text-main [&>strong]:text-text-main">
+                    {act.text}
+                  </div>
+                  <div className="text-[0.75rem] text-text-dim mt-1">
+                    {act.time}
+                  </div>
                 </div>
               </div>
             ))}

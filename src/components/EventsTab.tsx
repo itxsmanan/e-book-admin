@@ -1,69 +1,60 @@
-import React, { useState } from 'react';
-import { useAdminAuth } from '../context/AuthContext';
-import type { Event } from '../context/AuthContext';
-import { PlusIcon, EditIcon, TrashIcon, CloseIcon } from './Icons';
+import React, { useState } from "react";
+import { useAdminAuth } from "../context/AuthContext";
+import type { Event } from "../context/AuthContext";
+import { CloseIcon, EditIcon, PlusIcon, TrashIcon } from "./Icons";
+import { tw } from "./adminTailwind";
+
+const eventIcons = ["Camera", "Courthouse", "Film", "Author signing", "Books gathering", "Award ceremony"];
+const guestAvatars = ["Judge", "Guest", "Star", "Officer", "Author", "Business Leader"];
 
 export const EventsTab: React.FC = () => {
   const { eventsList, createEvent, updateEvent, deleteEvent } = useAdminAuth();
-
-  // State for Editor Modal
   const [showEditor, setShowEditor] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-
-  // Form Fields State
-  const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [badgeDate, setBadgeDate] = useState('');
-  const [location, setLocation] = useState('');
-  const [description, setDescription] = useState('');
-  const [imageIcon, setImageIcon] = useState('📸');
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState("");
+  const [badgeDate, setBadgeDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageIcon, setImageIcon] = useState("Camera");
   const [gallery, setGallery] = useState<string[]>([]);
-  
-  const [celebrityName, setCelebrityName] = useState('');
-  const [celebrityTitle, setCelebrityTitle] = useState('');
-  const [celebrityAvatar, setCelebrityAvatar] = useState('🌟');
-  
-  const [quote, setQuote] = useState('');
+  const [celebrityName, setCelebrityName] = useState("");
+  const [celebrityTitle, setCelebrityTitle] = useState("");
+  const [celebrityAvatar, setCelebrityAvatar] = useState("Guest");
+  const [quote, setQuote] = useState("");
 
-  // Handle Multi-File Gallery Upload (Base64 conversion in parallel)
   const handleGalleryUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
-    const fileArray = Array.from(files);
-    const promises = fileArray.map(file => {
-      return new Promise<string>((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(promises).then(base64Images => {
-      setGallery(prev => [...prev, ...base64Images]);
-    });
+    Promise.all(
+      Array.from(files).map(
+        (file) =>
+          new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+          }),
+      ),
+    ).then((base64Images) => setGallery((prev) => [...prev, ...base64Images]));
   };
 
-  // Handle modal open for Create
   const handleOpenCreate = () => {
     setEditingId(null);
-    setTitle('');
-    setDate('');
-    setBadgeDate('');
-    setLocation('');
-    setDescription('');
-    setImageIcon('📸');
+    setTitle("");
+    setDate("");
+    setBadgeDate("");
+    setLocation("");
+    setDescription("");
+    setImageIcon("Camera");
     setGallery([]);
-    setCelebrityName('');
-    setCelebrityTitle('');
-    setCelebrityAvatar('🌟');
-    setQuote('');
+    setCelebrityName("");
+    setCelebrityTitle("");
+    setCelebrityAvatar("Guest");
+    setQuote("");
     setShowEditor(true);
   };
 
-  // Handle modal open for Edit
   const handleOpenEdit = (event: Event) => {
     setEditingId(event.id);
     setTitle(event.title);
@@ -71,16 +62,15 @@ export const EventsTab: React.FC = () => {
     setBadgeDate(event.badgeDate);
     setLocation(event.location);
     setDescription(event.description);
-    setImageIcon(event.imageIcon || '📸');
+    setImageIcon(event.imageIcon || "Camera");
     setGallery(event.gallery || []);
     setCelebrityName(event.celebrity.name);
     setCelebrityTitle(event.celebrity.title);
-    setCelebrityAvatar(event.celebrity.avatar || '🌟');
+    setCelebrityAvatar(event.celebrity.avatar || "Guest");
     setQuote(event.quote);
     setShowEditor(true);
   };
 
-  // Form Submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !date || !location || !celebrityName) return;
@@ -88,14 +78,14 @@ export const EventsTab: React.FC = () => {
     const eventPayload = {
       title,
       date,
-      badgeDate: badgeDate || date.split(',')[0],
+      badgeDate: badgeDate || date.split(",")[0],
       location,
       description,
       imageIcon,
       celebrity: {
         name: celebrityName,
         title: celebrityTitle,
-        avatar: celebrityAvatar
+        avatar: celebrityAvatar,
       },
       quote,
       gallery,
@@ -104,323 +94,215 @@ export const EventsTab: React.FC = () => {
           name: celebrityName,
           role: celebrityTitle,
           avatar: celebrityAvatar,
-          quote: quote || description.slice(0, 100) + '...'
-        }
-      ]
+          quote: quote || `${description.slice(0, 100)}...`,
+        },
+      ],
     };
 
-    if (editingId !== null) {
-      updateEvent(editingId, eventPayload);
-    } else {
-      createEvent(eventPayload);
-    }
+    if (editingId !== null) updateEvent(editingId, eventPayload);
+    else createEvent(eventPayload);
 
     setShowEditor(false);
   };
 
   return (
-    <div>
-      {/* Tab Header Controls */}
-      <div className="admin-table-controls" style={{ justifyContent: 'flex-end' }}>
-        <button className="admin-btn-action-primary" onClick={handleOpenCreate}>
+    <div className="grid gap-6">
+      <div className="flex justify-end">
+        <button className={tw.primaryBtn} onClick={handleOpenCreate}>
           <PlusIcon size={18} />
-          <span>Create New Event</span>
+          Create New Event
         </button>
       </div>
 
-      {/* Grid of Events */}
-      <div className="admin-cards-list-grid">
-        {eventsList.map((event) => (
-          <div key={event.id} className="admin-entity-card">
-            <div className="admin-entity-card-media" style={{ overflow: 'hidden' }}>
-              <span className="admin-entity-card-badge">{event.badgeDate}</span>
-              {event.gallery && event.gallery.length > 0 ? (
-                <img src={event.gallery[0]} alt={event.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                event.imageIcon
-              )}
-            </div>
-            
-            <div className="admin-entity-card-content">
-              <h4 className="admin-entity-card-title">{event.title}</h4>
-              <div className="admin-entity-card-meta">
-                📅 {event.date} <br />
-                📍 {event.location}
+      <div className={tw.cardGrid}>
+        {eventsList.map((event) => {
+          const galleryList = event.gallery || [];
+          return (
+            <article key={event.id} className={`${tw.card} flex flex-col`}>
+              <div className={tw.media}>
+                <span className="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 text-xs font-black uppercase text-midnight">
+                  {event.badgeDate}
+                </span>
+                {galleryList[0] ? (
+                  <img src={galleryList[0]} alt={event.title} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="px-4 text-center text-2xl font-black">{event.imageIcon}</span>
+                )}
               </div>
-              <p className="admin-entity-card-desc">{event.description}</p>
-              
-              {/* Event card gallery grid preview */}
-              {(() => {
-                const galleryList = event.gallery || [];
-                if (galleryList.length === 0) return null;
-                return (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.4rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+
+              <div className={tw.cardBody}>
+                <h3 className="text-lg font-black leading-tight text-text-main">{event.title}</h3>
+                <p className="text-sm leading-6 text-text-dim">
+                  {event.date}
+                  <br />
+                  {event.location}
+                </p>
+                <p className="line-clamp-4 text-sm leading-6 text-text-dim">{event.description}</p>
+
+                {galleryList.length > 0 && (
+                  <div className="grid grid-cols-4 gap-2">
                     {galleryList.slice(0, 4).map((img, idx) => (
-                      <div 
-                        key={idx} 
-                        style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border-color)' }}
-                      >
-                        <img src={img} alt="Mini preview" style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <div key={idx} className="relative aspect-square overflow-hidden rounded-lg border border-text-main/10">
+                        <img src={img} alt="Mini preview" className="h-full w-full object-cover" />
                         {idx === 3 && galleryList.length > 4 && (
-                          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--navy)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', color: 'var(--gold-bright)', fontWeight: 600 }}>
+                          <div className="absolute inset-0 grid place-items-center bg-midnight/80 text-sm font-black text-gold-bright">
                             +{galleryList.length - 4}
                           </div>
                         )}
                       </div>
                     ))}
                   </div>
-                );
-              })()}
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: 'auto' }}>
-                <span style={{ fontSize: '1.2rem' }}>{event.celebrity.avatar}</span>
-                <div style={{ lineHeight: '1.2' }}>
-                  <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)' }}>{event.celebrity.name}</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{event.celebrity.title}</div>
+                )}
+
+                <div className="mt-auto flex items-center gap-3 rounded-xl bg-midnight/25 p-3">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-gold/10 text-xs font-black text-gold-bright">
+                    {event.celebrity.avatar.slice(0, 2)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-text-main">{event.celebrity.name}</p>
+                    <p className="truncate text-xs text-text-dim">{event.celebrity.title}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="admin-entity-card-footer">
-              <span style={{ fontSize: '0.8rem', color: 'var(--gold-bright)', fontWeight: 500 }}>
-                💬 {event.testimonials?.length || 0} Testimonial{event.testimonials?.length !== 1 ? 's' : ''}
-              </span>
-              <div className="admin-action-btn-group">
-                <button 
-                  className="admin-action-btn edit" 
-                  onClick={() => handleOpenEdit(event)}
-                  title="Edit Event"
-                >
-                  <EditIcon size={16} />
-                </button>
-                <button 
-                  className="admin-action-btn delete" 
-                  onClick={() => {
-                    if (confirm(`Are you sure you want to delete "${event.title}"?`)) {
-                      deleteEvent(event.id);
-                    }
-                  }}
-                  title="Delete Event"
-                >
-                  <TrashIcon size={16} />
-                </button>
+              <div className={tw.cardFooter}>
+                <span className="text-sm font-bold text-gold-bright">
+                  {event.testimonials?.length || 0} testimonial{event.testimonials?.length !== 1 ? "s" : ""}
+                </span>
+                <div className="flex gap-2">
+                  <button className={tw.iconBtn} onClick={() => handleOpenEdit(event)} title="Edit Event">
+                    <EditIcon size={16} />
+                  </button>
+                  <button
+                    className={tw.dangerIconBtn}
+                    onClick={() => {
+                      if (confirm(`Are you sure you want to delete "${event.title}"?`)) deleteEvent(event.id);
+                    }}
+                    title="Delete Event"
+                  >
+                    <TrashIcon size={16} />
+                  </button>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
-      {/* Editor Modal */}
       {showEditor && (
-        <div className="admin-modal-overlay" onClick={() => setShowEditor(false)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3>{editingId !== null ? 'Modify Event Details' : 'Publish New Event'}</h3>
-              <button className="admin-modal-close" onClick={() => setShowEditor(false)}>
+        <div className={tw.modalOverlay} onClick={() => setShowEditor(false)}>
+          <div className={`${tw.modalContent} max-w-4xl`} onClick={(e) => e.stopPropagation()}>
+            <div className={tw.modalHeader}>
+              <h3 className={tw.modalTitle}>{editingId !== null ? "Modify Event Details" : "Publish New Event"}</h3>
+              <button className={tw.iconBtn} onClick={() => setShowEditor(false)} type="button">
                 <CloseIcon size={20} />
               </button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="admin-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                
-                <div className="admin-form-group">
-                  <label>Event Title</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Supreme Court Book Launch"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
+
+            <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleSubmit}>
+              <div className={tw.modalBody}>
+                <label className={tw.field}>
+                  <span>Event Title</span>
+                  <input className={tw.input} value={title} onChange={(e) => setTitle(e.target.value)} required />
+                </label>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className={tw.field}>
+                    <span>Full Date</span>
+                    <input className={tw.input} value={date} onChange={(e) => setDate(e.target.value)} required />
+                  </label>
+                  <label className={tw.field}>
+                    <span>Badge Date</span>
+                    <input className={tw.input} value={badgeDate} onChange={(e) => setBadgeDate(e.target.value)} />
+                  </label>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="admin-form-group">
-                    <label>Full Date</label>
-                    <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. December 15, 2025"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        required
-                        style={{ paddingLeft: '1rem' }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label>Badge Date (Short)</label>
-                    <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Dec 15, 2025"
-                        value={badgeDate}
-                        onChange={(e) => setBadgeDate(e.target.value)}
-                        style={{ paddingLeft: '1rem' }}
-                      />
-                    </div>
-                  </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className={tw.field}>
+                    <span>Location / Venue</span>
+                    <input className={tw.input} value={location} onChange={(e) => setLocation(e.target.value)} required />
+                  </label>
+                  <label className={tw.field}>
+                    <span>Event Icon Label</span>
+                    <select className={tw.select} value={imageIcon} onChange={(e) => setImageIcon(e.target.value)}>
+                      {eventIcons.map((icon) => (
+                        <option key={icon} value={icon}>
+                          {icon}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <div className="admin-form-group">
-                    <label>Location / Venue</label>
-                    <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Supreme Court of Pakistan"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        required
-                        style={{ paddingLeft: '1rem' }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="admin-form-group">
-                    <label>Event Icon (Emoji Default)</label>
-                    <div className="admin-input-wrapper">
-                      <select
-                        value={imageIcon}
-                        onChange={(e) => setImageIcon(e.target.value)}
-                      >
-                        <option value="📸">📸 Camera (Launch/Meet)</option>
-                        <option value="🏛️">🏛️ Courthouse/Govt</option>
-                        <option value="🎬">🎬 Film/Celebrity</option>
-                        <option value="✍️">✍️ Author signing</option>
-                        <option value="📚">📚 Books gathering</option>
-                        <option value="🎖️">🎖️ Award ceremony</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Event Photo Gallery (Multiple Uploads)</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    <label 
-                      className="admin-btn-secondary" 
-                      style={{ display: 'block', padding: '0.75rem', textAlign: 'center', cursor: 'pointer', margin: 0, textTransform: 'none' }}
-                    >
-                      🖼️ Select & Upload Pictures
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        multiple 
-                        onChange={handleGalleryUpload} 
-                        style={{ display: 'none' }} 
-                      />
-                    </label>
-                    
-                    {gallery.length > 0 && (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.6rem', background: 'var(--uploader-bg)', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                        {gallery.map((img, idx) => (
-                          <div 
-                            key={idx} 
-                            style={{ position: 'relative', width: '100%', paddingBottom: '100%', borderRadius: '4px', overflow: 'hidden', border: '1px solid var(--border-color)' }}
+                <label className={tw.field}>
+                  <span>Event Photo Gallery</span>
+                  <label className={`${tw.secondaryBtn} cursor-pointer`}>
+                    Select & Upload Pictures
+                    <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="hidden" />
+                  </label>
+                  {gallery.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3 rounded-2xl border border-text-main/10 bg-midnight/25 p-3 sm:grid-cols-4">
+                      {gallery.map((img, idx) => (
+                        <div key={idx} className="relative aspect-square overflow-hidden rounded-xl border border-text-main/10">
+                          <img src={img} alt="Uploaded preview" className="h-full w-full object-cover" />
+                          <button
+                            type="button"
+                            className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-red-500 text-sm font-black text-text-main"
+                            onClick={() => setGallery((prev) => prev.filter((_, i) => i !== idx))}
                           >
-                            <img src={img} alt="Uploaded preview" style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }} />
-                            <button 
-                              type="button"
-                              style={{ position: 'absolute', top: '2px', right: '2px', width: '18px', height: '18px', borderRadius: '50%', background: 'rgba(239, 68, 68, 0.95)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 'bold' }}
-                              onClick={() => setGallery(prev => prev.filter((_, i) => i !== idx))}
-                              title="Delete Photo"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Celebrity Guest Name</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Justice Qazi Faez Isa"
-                      value={celebrityName}
-                      onChange={(e) => setCelebrityName(e.target.value)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
-                  <div className="admin-form-group">
-                    <label>Celebrity Designation / Title</label>
-                    <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. Chief Justice of Pakistan"
-                        value={celebrityTitle}
-                        onChange={(e) => setCelebrityTitle(e.target.value)}
-                        style={{ paddingLeft: '1rem' }}
-                      />
+                            x
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  )}
+                </label>
 
-                  <div className="admin-form-group">
-                    <label>Guest Avatar (Emoji)</label>
-                    <div className="admin-input-wrapper">
-                      <select
-                        value={celebrityAvatar}
-                        onChange={(e) => setCelebrityAvatar(e.target.value)}
-                      >
-                        <option value="👨‍⚖️">👨‍⚖️ Male Judge</option>
-                        <option value="👩‍⚖️">👩‍⚖️ Female Judge</option>
-                        <option value="🌟">🌟 Star (Mahira/Fawad)</option>
-                        <option value="🎖️">🎖️ Official/Officer</option>
-                        <option value="📚">📚 Author/Critic</option>
-                        <option value="👨‍💼">👨‍💼 Business Leader</option>
-                      </select>
-                    </div>
-                  </div>
+                <label className={tw.field}>
+                  <span>Celebrity Guest Name</span>
+                  <input className={tw.input} value={celebrityName} onChange={(e) => setCelebrityName(e.target.value)} required />
+                </label>
+
+                <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+                  <label className={tw.field}>
+                    <span>Celebrity Designation / Title</span>
+                    <input className={tw.input} value={celebrityTitle} onChange={(e) => setCelebrityTitle(e.target.value)} />
+                  </label>
+                  <label className={tw.field}>
+                    <span>Guest Avatar Label</span>
+                    <select className={tw.select} value={celebrityAvatar} onChange={(e) => setCelebrityAvatar(e.target.value)}>
+                      {guestAvatars.map((avatar) => (
+                        <option key={avatar} value={avatar}>
+                          {avatar}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
 
-                <div className="admin-form-group">
-                  <label>Featured Quote by Guest</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. This book brilliantly captures the essence..."
-                      value={quote}
-                      onChange={(e) => setQuote(e.target.value)}
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
-                </div>
+                <label className={tw.field}>
+                  <span>Featured Quote by Guest</span>
+                  <input className={tw.input} value={quote} onChange={(e) => setQuote(e.target.value)} />
+                </label>
 
-                <div className="admin-form-group">
-                  <label>Full Event Description</label>
-                  <textarea 
-                    placeholder="Provide a detailed paragraph summary of the ceremony, attendees, and discussions..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
-
+                <label className={tw.field}>
+                  <span>Full Event Description</span>
+                  <textarea className={tw.textarea} value={description} onChange={(e) => setDescription(e.target.value)} />
+                </label>
               </div>
-              <div className="admin-modal-footer">
-                <button type="submit" className="admin-btn-action-primary" style={{ padding: '0.7rem 1.5rem' }}>
-                  {editingId !== null ? 'Save Changes' : 'Publish Event'}
-                </button>
-                <button type="button" className="admin-btn-secondary" onClick={() => setShowEditor(false)}>
+
+              <div className={tw.modalFooter}>
+                <button className={tw.secondaryBtn} type="button" onClick={() => setShowEditor(false)}>
                   Cancel
+                </button>
+                <button className={tw.primaryBtn} type="submit">
+                  {editingId !== null ? "Save Changes" : "Publish Event"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 };

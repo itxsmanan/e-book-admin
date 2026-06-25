@@ -1,35 +1,46 @@
-import React, { useState } from 'react';
-import { useAdminAuth } from '../context/AuthContext';
-import type { User } from '../context/AuthContext';
-import { SearchIcon, CloseIcon } from './Icons';
+import React, { useState } from "react";
+import { useAdminAuth } from "../context/AuthContext";
+import type { User } from "../context/AuthContext";
+import { CloseIcon, SearchIcon, TrashIcon } from "./Icons";
+import { statusBadge, tw } from "./adminTailwind";
+
+type SubscriptionName = User["subscription"];
+
+const avatarOptions = [
+  "Reader",
+  "Writer",
+  "Teacher",
+  "Business",
+  "Student",
+  "Author",
+];
 
 export const UsersTab: React.FC = () => {
   const { users, toggleUserStatus, deleteUser, addUser, booksList } = useAdminAuth();
-
-  // Search & Filter State
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('All');
-  const [statusFilter, setStatusFilter] = useState('All');
-
-  // Modal State
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserRole, setNewUserRole] = useState<User["role"]>("User");
+  const [newUserSub, setNewUserSub] = useState<SubscriptionName>("None");
+  const [newUserAvatar, setNewUserAvatar] = useState("Reader");
 
-  // Form State for Adding User
-  const [newUserName, setNewUserName] = useState('');
-  const [newUserEmail, setNewUserEmail] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'User' | 'Admin'>('User');
-  const [newUserSub, setNewUserSub] = useState<'Monthly' | 'Quarterly' | 'Half-Yearly' | '9-Month Plan' | 'Annual' | 'None'>('None');
-  const [newUserAvatar, setNewUserAvatar] = useState('🧑‍💻');
-
-  // Filter and search computation
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === 'All' || user.role === roleFilter;
-    const matchesStatus = statusFilter === 'All' || user.status === statusFilter;
+  const filteredUsers = users.filter((user) => {
+    const term = searchTerm.toLowerCase();
+    const matchesSearch =
+      user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
+    const matchesRole = roleFilter === "All" || user.role === roleFilter;
+    const matchesStatus = statusFilter === "All" || user.status === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;
   });
+
+  const getBookTitle = (bookId: number) => {
+    const book = booksList.find((b) => b.id === bookId);
+    return book ? book.title : `Book #${bookId}`;
+  };
 
   const handleAddUserSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,54 +51,44 @@ export const UsersTab: React.FC = () => {
       email: newUserEmail,
       role: newUserRole,
       subscription: newUserSub,
-      status: 'Active',
+      status: "Active",
       avatar: newUserAvatar,
-      purchasedBooks: []
+      purchasedBooks: [],
     });
 
-    // Reset Form
-    setNewUserName('');
-    setNewUserEmail('');
-    setNewUserRole('User');
-    setNewUserSub('None');
-    setNewUserAvatar('🧑‍💻');
+    setNewUserName("");
+    setNewUserEmail("");
+    setNewUserRole("User");
+    setNewUserSub("None");
+    setNewUserAvatar("Reader");
     setShowAddModal(false);
   };
 
-  const getBookTitle = (bookId: number) => {
-    const book = booksList.find(b => b.id === bookId);
-    return book ? `${book.title} ${book.cover}` : `Book #${bookId}`;
-  };
-
   return (
-    <div>
-      {/* Controls Header */}
-      <div className="admin-table-controls">
-        <div className="admin-search-box">
-          <input 
-            type="text" 
-            placeholder="Search users by name or email..." 
+    <div className="grid gap-6">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="relative w-full lg:max-w-sm">
+          <SearchIcon
+            size={18}
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-text-dim"
+          />
+          <input
+            className={`${tw.input} pl-11`}
+            type="text"
+            placeholder="Search users by name or email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <span className="admin-search-icon">
-            <SearchIcon size={18} />
-          </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', flexGrow: 1 }}>
-          <select 
-            className="admin-filter-select"
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-          >
+        <div className="grid gap-3 sm:grid-cols-3 lg:w-auto">
+          <select className={tw.select} value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
             <option value="All">All Roles</option>
             <option value="Admin">Admin</option>
             <option value="User">User</option>
           </select>
-
-          <select 
-            className="admin-filter-select"
+          <select
+            className={tw.select}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -95,276 +96,276 @@ export const UsersTab: React.FC = () => {
             <option value="Active">Active</option>
             <option value="Suspended">Suspended</option>
           </select>
+          <button className={tw.primaryBtn} onClick={() => setShowAddModal(true)} type="button">
+            Add User
+          </button>
         </div>
-
       </div>
 
-      {/* Responsive Table */}
-      <div className="admin-table-container">
-        <table className="admin-table">
-          <thead>
+      <div className="hidden overflow-hidden rounded-2xl border border-text-main/10 bg-slate/40 shadow-[0_16px_42px_rgba(0,0,0,0.16)] lg:block">
+        <table className="w-full text-left">
+          <thead className="bg-midnight/45 text-xs uppercase tracking-wider text-text-dim">
             <tr>
-              <th>User</th>
-              <th>Role</th>
-              <th>Joined Date</th>
-              <th>Subscription</th>
-              <th>Status</th>
-              <th style={{ textAlign: 'right' }}>Actions</th>
+              {["User", "Role", "Joined", "Subscription", "Status", "Actions"].map((head) => (
+                <th key={head} className="px-5 py-4 font-extrabold last:text-right">
+                  {head}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers.map((user) => (
-                <tr key={user.id}>
-                  <td>
-                    <div className="admin-table-user">
-                      <div className="admin-table-avatar">{user.avatar}</div>
-                      <div className="admin-table-user-details">
-                        <span className="admin-table-username">{user.name}</span>
-                        <span className="admin-table-email">{user.email}</span>
-                      </div>
+          <tbody className="divide-y divide-white/5">
+            {filteredUsers.map((user) => (
+              <tr key={user.id} className="transition hover:bg-text-main/[0.03]">
+                <td className="px-5 py-4">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-text-main/10 bg-navy/40 text-xs font-black text-gold-bright">
+                      {user.avatar.slice(0, 2)}
                     </div>
-                  </td>
-                  <td>
-                    <span className="admin-badge badge-role-user">
-                      User
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ color: 'var(--text-dim)' }}>{user.joinedDate}</span>
-                  </td>
-                  <td>
-                    <span>{user.subscription}</span>
-                  </td>
-                  <td>
-                    <span className={`admin-badge ${user.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>
-                      {user.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="admin-action-btn-group" style={{ justifyContent: 'flex-end' }}>
-                      <button 
-                        className="admin-btn-secondary" 
-                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                        onClick={() => setSelectedUser(user)}
-                      >
-                        Details
-                      </button>
-                      <button 
-                        className={`admin-btn-status-toggle ${user.status === 'Active' ? 'suspend' : 'active'}`}
-                        onClick={() => toggleUserStatus(user.id)}
-                      >
-                        {user.status === 'Active' ? 'Suspend' : 'Activate'}
-                      </button>
-                      <button 
-                        className="admin-action-btn delete"
-                        onClick={() => deleteUser(user.id)}
-                        title="Delete User"
-                      >
-                        ×
-                      </button>
+                    <div className="min-w-0">
+                      <p className="font-bold text-text-main">{user.name}</p>
+                      <p className="break-all text-xs text-text-dim">{user.email}</p>
                     </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-dim)' }}>
-                  No users found matching filters.
+                  </div>
+                </td>
+                <td className="px-5 py-4">
+                  <span className={`${tw.badge} ${tw.neutralBadge}`}>{user.role}</span>
+                </td>
+                <td className="px-5 py-4 text-sm text-text-dim">{user.joinedDate}</td>
+                <td className="px-5 py-4 text-sm text-text-main">{user.subscription}</td>
+                <td className="px-5 py-4">
+                  <span className={statusBadge(user.status)}>{user.status}</span>
+                </td>
+                <td className="px-5 py-4">
+                  <div className="flex justify-end gap-2">
+                    <button className={tw.secondaryBtn} onClick={() => setSelectedUser(user)}>
+                      Details
+                    </button>
+                    <button
+                      className={user.status === "Active" ? tw.dangerBtn : tw.secondaryBtn}
+                      onClick={() => toggleUserStatus(user.id)}
+                    >
+                      {user.status === "Active" ? "Suspend" : "Activate"}
+                    </button>
+                    <button className={tw.dangerIconBtn} onClick={() => deleteUser(user.id)}>
+                      <TrashIcon size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
 
-      {/* User Details Modal */}
+      <div className="grid gap-4 lg:hidden">
+        {filteredUsers.map((user) => (
+          <article key={user.id} className={`${tw.card} p-4`}>
+            <div className="flex gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-text-main/10 bg-navy/40 text-xs font-black text-gold-bright">
+                {user.avatar.slice(0, 2)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="font-extrabold text-text-main">{user.name}</h3>
+                <p className="break-all text-sm text-text-dim">{user.email}</p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-xl bg-midnight/25 p-3">
+                <span className="block text-xs uppercase text-text-dim">Role</span>
+                <strong>{user.role}</strong>
+              </div>
+              <div className="rounded-xl bg-midnight/25 p-3">
+                <span className="block text-xs uppercase text-text-dim">Plan</span>
+                <strong>{user.subscription}</strong>
+              </div>
+              <div className="rounded-xl bg-midnight/25 p-3">
+                <span className="block text-xs uppercase text-text-dim">Joined</span>
+                <strong>{user.joinedDate}</strong>
+              </div>
+              <div className="rounded-xl bg-midnight/25 p-3">
+                <span className="block text-xs uppercase text-text-dim">Status</span>
+                <span className={statusBadge(user.status)}>{user.status}</span>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+              <button className={tw.secondaryBtn} onClick={() => setSelectedUser(user)}>
+                Details
+              </button>
+              <button
+                className={user.status === "Active" ? tw.dangerBtn : tw.secondaryBtn}
+                onClick={() => toggleUserStatus(user.id)}
+              >
+                {user.status === "Active" ? "Suspend" : "Activate"}
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {filteredUsers.length === 0 && (
+        <div className="rounded-2xl border border-text-main/10 bg-slate/40 p-10 text-center text-text-dim">
+          No users found matching filters.
+        </div>
+      )}
+
       {selectedUser && (
-        <div className="admin-modal-overlay" onClick={() => setSelectedUser(null)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3>User Profile Details</h3>
-              <button className="admin-modal-close" onClick={() => setSelectedUser(null)}>
+        <div className={tw.modalOverlay} onClick={() => setSelectedUser(null)}>
+          <div className={tw.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={tw.modalHeader}>
+              <h3 className={tw.modalTitle}>User Profile Details</h3>
+              <button className={tw.iconBtn} onClick={() => setSelectedUser(null)}>
                 <CloseIcon size={20} />
               </button>
             </div>
-            <div className="admin-modal-body">
-              <div className="admin-user-details-card">
-                <div className="admin-user-details-profile">
-                  <div className="admin-user-details-avatar">{selectedUser.avatar}</div>
-                  <div className="admin-user-details-main">
-                    <h4>{selectedUser.name}</h4>
-                    <p style={{ color: 'var(--text-dim)' }}>{selectedUser.email}</p>
-                    <div className="admin-user-profile-chips">
-                      <span className="admin-badge badge-role-user">User</span>
-                      <span className={`admin-badge ${selectedUser.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>{selectedUser.status}</span>
-                    </div>
+            <div className={tw.modalBody}>
+              <div className="flex flex-col gap-4 rounded-2xl border border-text-main/10 bg-midnight/25 p-4 sm:flex-row sm:items-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-gold/40 bg-gold/10 text-sm font-black text-gold-bright">
+                  {selectedUser.avatar.slice(0, 2)}
+                </div>
+                <div className="min-w-0">
+                  <h4 className="text-xl font-black text-text-main">{selectedUser.name}</h4>
+                  <p className="break-all text-sm text-text-dim">{selectedUser.email}</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className={`${tw.badge} ${tw.neutralBadge}`}>{selectedUser.role}</span>
+                    <span className={statusBadge(selectedUser.status)}>{selectedUser.status}</span>
                   </div>
                 </div>
+              </div>
 
-                <div className="admin-user-details-grid">
-                  <div className="admin-user-detail-item">
-                    <label>User ID</label>
-                    <p>{selectedUser.id}</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {[
+                  ["User ID", selectedUser.id],
+                  ["Security Role", selectedUser.role],
+                  ["Joined Date", selectedUser.joinedDate],
+                  ["Subscription Tier", selectedUser.subscription],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-xl border border-text-main/10 bg-midnight/25 p-4">
+                    <span className="text-xs font-extrabold uppercase text-text-dim">{label}</span>
+                    <p className="mt-1 font-bold text-text-main">{value}</p>
                   </div>
-                  <div className="admin-user-detail-item">
-                    <label>Security Role</label>
-                    <p><span className="admin-badge badge-role-user">User</span></p>
-                  </div>
-                  <div className="admin-user-detail-item">
-                    <label>Joined Date</label>
-                    <p>{selectedUser.joinedDate}</p>
-                  </div>
-                  <div className="admin-user-detail-item">
-                    <label>Subscription Tier</label>
-                    <p>{selectedUser.subscription}</p>
-                  </div>
-                  <div className="admin-user-detail-item">
-                    <label>Account Status</label>
-                    <p><span className={`admin-badge ${selectedUser.status === 'Active' ? 'badge-active' : 'badge-suspended'}`}>{selectedUser.status}</span></p>
-                  </div>
-                </div>
+                ))}
+              </div>
 
-                <div className="admin-user-detail-books">
-                  <label>Purchased / Borrowed Books ({selectedUser.purchasedBooks.length})</label>
+              <div className="rounded-xl border border-text-main/10 bg-midnight/25 p-4">
+                <span className="text-xs font-extrabold uppercase text-text-dim">
+                  Purchased / Borrowed Books ({selectedUser.purchasedBooks.length})
+                </span>
+                <div className="mt-3 flex flex-wrap gap-2">
                   {selectedUser.purchasedBooks.length > 0 ? (
-                    <div className="admin-user-books-grid">
-                      {selectedUser.purchasedBooks.map((bId) => (
-                        <span key={bId} className="admin-user-book-tag">
-                          {getBookTitle(bId)}
-                        </span>
-                      ))}
-                    </div>
+                    selectedUser.purchasedBooks.map((bId) => (
+                      <span key={bId} className={`${tw.badge} ${tw.neutralBadge}`}>
+                        {getBookTitle(bId)}
+                      </span>
+                    ))
                   ) : (
-                    <p style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>No books purchased or checked out.</p>
+                    <p className="text-sm text-text-dim">No books purchased or checked out.</p>
                   )}
                 </div>
               </div>
             </div>
-            <div className="admin-modal-footer">
-              <button 
-                className={`admin-btn-primary`} 
-                style={{ width: 'auto', background: selectedUser.status === 'Active' ? '#ef4444' : '#34d399', color: '#fff', boxShadow: 'none' }}
+            <div className={tw.modalFooter}>
+              <button className={tw.secondaryBtn} onClick={() => setSelectedUser(null)}>
+                Close
+              </button>
+              <button
+                className={selectedUser.status === "Active" ? tw.dangerBtn : tw.primaryBtn}
                 onClick={() => {
                   toggleUserStatus(selectedUser.id);
-                  // Update state local modal
                   setSelectedUser({
                     ...selectedUser,
-                    status: selectedUser.status === 'Active' ? 'Suspended' : 'Active'
+                    status: selectedUser.status === "Active" ? "Suspended" : "Active",
                   });
                 }}
               >
-                {selectedUser.status === 'Active' ? '🛑 Suspend Account' : '✓ Activate Account'}
-              </button>
-              <button className="admin-btn-secondary" onClick={() => setSelectedUser(null)}>
-                Close
+                {selectedUser.status === "Active" ? "Suspend Account" : "Activate Account"}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Add User Modal */}
       {showAddModal && (
-        <div className="admin-modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="admin-modal-header">
-              <h3>Create User Account</h3>
-              <button className="admin-modal-close" onClick={() => setShowAddModal(false)}>
+        <div className={tw.modalOverlay} onClick={() => setShowAddModal(false)}>
+          <div className={tw.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={tw.modalHeader}>
+              <h3 className={tw.modalTitle}>Create User Account</h3>
+              <button className={tw.iconBtn} onClick={() => setShowAddModal(false)}>
                 <CloseIcon size={20} />
               </button>
             </div>
-            <form onSubmit={handleAddUserSubmit}>
-              <div className="admin-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                <div className="admin-form-group">
-                  <label>Full Name</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Sajid Kakar"
-                      value={newUserName}
-                      onChange={(e) => setNewUserName(e.target.value)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Email Address</label>
-                  <div className="admin-input-wrapper" style={{ display: 'block' }}>
-                    <input 
-                      type="email" 
-                      placeholder="e.g. sajid@gmail.com"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
-                      required
-                      style={{ paddingLeft: '1rem' }}
-                    />
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Avatar / Emoji</label>
-                  <div className="admin-input-wrapper">
+            <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleAddUserSubmit}>
+              <div className={tw.modalBody}>
+                <label className={tw.field}>
+                  <span>Full Name</span>
+                  <input
+                    className={tw.input}
+                    type="text"
+                    value={newUserName}
+                    onChange={(e) => setNewUserName(e.target.value)}
+                    required
+                  />
+                </label>
+                <label className={tw.field}>
+                  <span>Email Address</span>
+                  <input
+                    className={tw.input}
+                    type="email"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    required
+                  />
+                </label>
+                <label className={tw.field}>
+                  <span>Avatar Label</span>
+                  <select className={tw.select} value={newUserAvatar} onChange={(e) => setNewUserAvatar(e.target.value)}>
+                    {avatarOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className={tw.field}>
+                    <span>Security Role</span>
                     <select
-                      value={newUserAvatar}
-                      onChange={(e) => setNewUserAvatar(e.target.value)}
-                    >
-                      <option value="🧑‍💻">🧑‍💻 Coder</option>
-                      <option value="👩‍⚕️">👩‍⚕️ Doctor</option>
-                      <option value="👨‍💼">👨‍💼 Business</option>
-                      <option value="👩‍🏫">👩‍🏫 Teacher</option>
-                      <option value="👨‍🎨">👨‍🎨 Artist</option>
-                      <option value="📖">📖 Reader</option>
-                      <option value="✍️">✍️ Author</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Security Role</label>
-                  <div className="admin-input-wrapper">
-                    <select
+                      className={tw.select}
                       value={newUserRole}
-                      onChange={(e) => setNewUserRole(e.target.value as any)}
+                      onChange={(e) => setNewUserRole(e.target.value as User["role"])}
                     >
                       <option value="User">User</option>
                       <option value="Admin">Admin</option>
                     </select>
-                  </div>
-                </div>
-
-                <div className="admin-form-group">
-                  <label>Subscription Tier</label>
-                  <div className="admin-input-wrapper">
+                  </label>
+                  <label className={tw.field}>
+                    <span>Subscription Tier</span>
                     <select
+                      className={tw.select}
                       value={newUserSub}
-                      onChange={(e) => setNewUserSub(e.target.value as any)}
+                      onChange={(e) => setNewUserSub(e.target.value as SubscriptionName)}
                     >
-                      <option value="None">None (Free Reader)</option>
-                      <option value="Monthly">Monthly Plan</option>
-                      <option value="Quarterly">Quarterly Plan</option>
-                      <option value="Half-Yearly">Half-Yearly Plan</option>
+                      <option value="None">None</option>
+                      <option value="Monthly">Monthly</option>
+                      <option value="Quarterly">Quarterly</option>
+                      <option value="Half-Yearly">Half-Yearly</option>
                       <option value="9-Month Plan">9-Month Plan</option>
-                      <option value="Annual">Annual Plan</option>
+                      <option value="Annual">Annual</option>
                     </select>
-                  </div>
+                  </label>
                 </div>
               </div>
-              <div className="admin-modal-footer">
-                <button type="submit" className="admin-btn-action-primary" style={{ padding: '0.7rem 1.5rem' }}>
-                  Create User
-                </button>
-                <button type="button" className="admin-btn-secondary" onClick={() => setShowAddModal(false)}>
+              <div className={tw.modalFooter}>
+                <button className={tw.secondaryBtn} type="button" onClick={() => setShowAddModal(false)}>
                   Cancel
+                </button>
+                <button className={tw.primaryBtn} type="submit">
+                  Create User
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </div>
   );
 };

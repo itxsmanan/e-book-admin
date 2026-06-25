@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo-2-transparent.png';
 import {
   DashboardIcon,
   UsersIcon,
@@ -15,8 +16,6 @@ interface SidebarProps {
   isMobileOpen: boolean;
   setIsMobileOpen: (open: boolean) => void;
 }
-
-const sidebarLogoUrdu = '\u06a9\u062a\u0627\u0628\u0648\u06ba \u06a9\u06cc \u062f\u0648\u0644\u062a';
 
 export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
   const { logout } = useAdminAuth();
@@ -44,39 +43,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
     <>
       {isMobileOpen && (
         <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(10, 14, 39, 0.6)',
-            zIndex: 99,
-            backdropFilter: 'blur(4px)'
-          }}
+          className="fixed inset-0 bg-midnight/60 z-[99] backdrop-blur-sm md:hidden"
           onClick={closeMobileSidebar}
         />
       )}
 
-      <aside className={`admin-sidebar ${isMobileOpen ? 'mobile-open' : ''}`}>
-        <div className="admin-sidebar-logo">
-          <div className="admin-sidebar-brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 64 64" role="img">
-              <circle cx="32" cy="32" r="30" />
-              <path d="M40.8 14.2c-9.7 4.8-16 12.1-16.6 21.8-.4 7.2 4.7 11.7 12.5 11.7 4.8 0 8.9-1.2 12.6-3.4-3.6 6.1-10.1 10.1-18.6 10.1-11.3 0-19.2-7.1-18.6-17.9.6-11.5 9.1-20.6 22.5-25.2l6.2 2.9Z" />
-              <path d="M39.1 15.7c2.3 5.3 2.4 10.1.1 14.4 5.2-2.1 8.6-6.1 10.1-12.2l-10.2-2.2Z" />
-            </svg>
-          </div>
-          <div className="admin-sidebar-logo-urdu" lang="ur" dir="rtl">{sidebarLogoUrdu}</div>
-          <div className="admin-sidebar-logo-subtitle">KITABON KI DOLAT</div>
+      <aside className={`bg-slate border-r border-text-main/5 flex flex-col h-screen sticky top-0 z-[100] transition-all duration-300 md:w-[260px] md:flex-none ${isMobileOpen ? 'fixed inset-y-0 left-0 w-[260px] translate-x-0' : 'max-md:-translate-x-full max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:w-[260px]'}`}>
+        <div className="py-5 px-4 pb-[1.2rem] border-b border-text-main/5 text-center flex items-center justify-center min-h-[150px] relative after:content-[''] after:absolute after:left-5 after:right-5 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-gold/30 after:to-transparent">
+          <img src={logoImg} alt="Kitabon Ki Dolat Logo" className="w-[180px] h-auto object-contain max-h-[120px]" />
         </div>
 
-        <ul className="admin-sidebar-menu">
+        <ul className="list-none py-6 px-4 flex flex-col gap-[0.4rem] flex-grow overflow-y-auto">
           {menuItems.map((item) => (
-            <li key={item.path} className="admin-sidebar-menu-item" onClick={closeMobileSidebar}>
+            <li key={item.path} onClick={closeMobileSidebar}>
               <NavLink
                 to={item.path}
-                className={({ isActive }) => (isActive ? 'active' : '')}
+                className={({ isActive }) => `flex items-center gap-4 w-full py-[0.85rem] px-4 border-l-[3px] rounded-lg text-[0.95rem] text-left cursor-pointer no-underline transition-all duration-200 hover:bg-text-main/10 hover:text-text-main ${isActive ? 'bg-gold/10 text-gold-bright font-semibold border-gold rounded-l-none' : 'bg-transparent border-transparent text-text-dim font-medium'}`}
               >
                 {item.icon}
                 <span>{item.name}</span>
@@ -85,8 +67,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
           ))}
         </ul>
 
-        <div className="admin-sidebar-footer">
-          <button className="admin-sidebar-logout-btn" onClick={handleLogout}>
+        <div className="p-4 border-t border-text-main/5">
+          <button className="flex items-center gap-4 w-full py-[0.8rem] px-4 bg-transparent border border-accent/20 rounded-lg text-accent-light text-[0.9rem] font-semibold cursor-pointer transition-all duration-300 hover:bg-accent/10 hover:text-text-main hover:border-accent" onClick={handleLogout}>
             <LogOutIcon size={18} />
             <span>Sign Out</span>
           </button>

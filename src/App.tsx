@@ -14,7 +14,7 @@ import { InquiriesTab } from './components/InquiriesTab';
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <div className="admin-panel-root">
+      <div className="min-h-screen flex flex-col">
         <Routes>
           {/* Public Login Route */}
           <Route path="login" element={<Login />} />

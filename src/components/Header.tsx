@@ -43,21 +43,25 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
   };
 
   return (
-    <header className="admin-header">
-      <div className="admin-header-left">
-        <button className="admin-menu-toggle" onClick={() => setIsMobileOpen(true)} aria-label="Open admin navigation">
+    <header className="min-h-[68px] bg-gradient-to-br from-slate/80 to-midnight/70 backdrop-blur-xl saturate-110 border-b border-gold/15 px-3 py-2 flex items-center justify-between gap-3 sticky top-0 z-[90] shadow-[0_18px_45px_rgba(0,0,0,0.18)] sm:min-h-[74px] sm:px-5 lg:min-h-[78px] lg:px-8">
+      <div className="flex items-center gap-3 min-w-0 flex-1 sm:gap-4">
+        <button 
+          className="flex h-11 w-11 flex-none cursor-pointer items-center justify-center rounded-xl border border-text-main/10 bg-text-main/5 text-text-main transition-all duration-300 hover:-translate-y-px hover:border-gold/40 hover:text-gold-bright md:hidden" 
+          onClick={() => setIsMobileOpen(true)} 
+          aria-label="Open admin navigation"
+        >
           <MenuIcon size={24} />
         </button>
-        <div className="admin-header-title-group">
-          <span className="admin-header-eyebrow">Kitabon Ki Dolat</span>
-          <h1 className="admin-header-title">{getSectionTitle()}</h1>
+        <div className="min-w-0">
+          <span className="hidden text-gold text-[0.68rem] font-bold tracking-widest leading-none mb-1.5 uppercase sm:block">Kitabon Ki Dolat</span>
+          <h1 className="m-0 max-w-[38vw] overflow-hidden text-ellipsis whitespace-nowrap text-[1rem] font-extrabold leading-tight tracking-tight text-text-main min-[420px]:max-w-[44vw] sm:max-w-[52vw] sm:text-[clamp(1.15rem,2vw,1.65rem)] lg:text-[clamp(1.3rem,2vw,1.8rem)]">{getSectionTitle()}</h1>
         </div>
       </div>
 
-      <div className="admin-header-right">
+      <div className="flex flex-none items-center gap-2 sm:gap-3">
         <button
           onClick={toggleTheme}
-          className="admin-theme-toggle-btn"
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-text-main/10 bg-text-main/5 text-text-dim transition-all duration-200 hover:bg-text-main/10 hover:text-text-main"
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           type="button"
         >
@@ -81,13 +85,13 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
         </button>
 
         {adminUser && (
-          <div className="admin-header-user-profile">
-            <div className="admin-user-avatar" aria-hidden="true">
+          <div className="hidden min-h-11 items-center gap-2 rounded-full border border-gold/15 bg-text-main/5 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:flex sm:min-h-[52px] sm:gap-3.5 sm:pr-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gold/30 bg-gradient-to-br from-gold/30 to-gold-bright/15 text-lg shadow-[0_10px_24px_rgba(201,169,98,0.12)] sm:h-11 sm:w-11 sm:text-xl" aria-hidden="true">
               {'\u270d\ufe0f'}
             </div>
-            <div className="admin-user-info">
-              <span className="admin-user-name">{adminUser.name}</span>
-              <span className="admin-user-role">{adminUser.role}</span>
+            <div className="hidden min-w-0 flex-col sm:flex">
+              <span className="text-[0.95rem] leading-tight font-extrabold text-text-main whitespace-nowrap">{adminUser.name}</span>
+              <span className="text-[0.78rem] text-text-dim font-semibold whitespace-nowrap">{adminUser.role}</span>
             </div>
           </div>
         )}
