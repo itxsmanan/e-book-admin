@@ -1,7 +1,24 @@
 import React, { useState } from "react";
 import { useAdminAuth } from "../context/AuthContext";
 import type { Book } from "../context/AuthContext";
-import { CloseIcon, EditIcon, PlusIcon, TrashIcon, BookCoverIcon } from "./Icons";
+import {
+  BookCoverIcon,
+  BuildingIcon,
+  CalendarIcon,
+  CloseIcon,
+  DollarIcon,
+  EditIcon,
+  FileTextIcon,
+  GlobeIcon,
+  HashIcon,
+  ImageIcon,
+  PlusIcon,
+  StarIcon,
+  TagIcon,
+  TrashIcon,
+  TypeIcon,
+  UserIcon,
+} from "./Icons";
 import { tw } from "./adminTailwind";
 
 const defaultCover = "Book";
@@ -120,22 +137,41 @@ export const BooksTab: React.FC = () => {
             </div>
 
             <div className={tw.cardBody}>
-              <p className="text-xs font-extrabold uppercase tracking-wider text-gold">{book.category}</p>
+              <p className="inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-gold">
+                <TagIcon size={14} />
+                {book.category}
+              </p>
               <h3 className="text-lg font-black leading-tight text-text-main">{book.title}</h3>
-              <p className="text-sm text-text-dim">by {book.author}</p>
+              <p className="inline-flex items-center gap-2 text-sm text-text-dim">
+                <UserIcon size={15} className="text-gold/80" />
+                by {book.author}
+              </p>
 
               <div className="grid grid-cols-2 gap-2 text-sm text-text-dim">
-                <span>Print: <strong className="text-text-main">Rs. {book.printPrice.toLocaleString()}</strong></span>
-                <span>Ebook: <strong className="text-text-main">Rs. {book.ebookPrice.toLocaleString()}</strong></span>
-                <span>Pages: <strong className="text-text-main">{book.pages}</strong></span>
-                <span>Lang: <strong className="text-text-main">{book.language}</strong></span>
+                <span className="inline-flex min-w-0 items-center gap-2 rounded-xl bg-midnight/25 px-3 py-2">
+                  <DollarIcon size={15} className="shrink-0 text-gold/80" />
+                  <span className="min-w-0 truncate">Print: <strong className="text-text-main">Rs. {book.printPrice.toLocaleString()}</strong></span>
+                </span>
+                <span className="inline-flex min-w-0 items-center gap-2 rounded-xl bg-midnight/25 px-3 py-2">
+                  <DollarIcon size={15} className="shrink-0 text-gold/80" />
+                  <span className="min-w-0 truncate">Ebook: <strong className="text-text-main">Rs. {book.ebookPrice.toLocaleString()}</strong></span>
+                </span>
+                <span className="inline-flex min-w-0 items-center gap-2 rounded-xl bg-midnight/25 px-3 py-2">
+                  <FileTextIcon size={15} className="shrink-0 text-gold/80" />
+                  <span className="min-w-0 truncate">Pages: <strong className="text-text-main">{book.pages}</strong></span>
+                </span>
+                <span className="inline-flex min-w-0 items-center gap-2 rounded-xl bg-midnight/25 px-3 py-2">
+                  <GlobeIcon size={15} className="shrink-0 text-gold/80" />
+                  <span className="min-w-0 truncate">Lang: <strong className="text-text-main">{book.language}</strong></span>
+                </span>
               </div>
 
               <p className="line-clamp-4 text-sm leading-6 text-text-dim">{book.description}</p>
             </div>
 
             <div className={tw.cardFooter}>
-              <span className="text-sm font-bold text-gold-bright">
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-gold-bright">
+                <StarIcon size={16} />
                 {book.rating || "5.0"} ({book.reviews || 0} reviews)
               </span>
               <div className="flex gap-2">
@@ -171,17 +207,26 @@ export const BooksTab: React.FC = () => {
               <div className={tw.modalBody}>
                 <label className={tw.field}>
                   <span>Book Title</span>
-                  <input className={tw.input} value={title} onChange={(e) => setTitle(e.target.value)} required />
+                  <div className={tw.control}>
+                    <TypeIcon className={tw.fieldIcon} size={18} />
+                    <input className={tw.input} value={title} onChange={(e) => setTitle(e.target.value)} required />
+                  </div>
                 </label>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className={tw.field}>
                     <span>Author Name</span>
+                    <div className={tw.control}>
+                    <UserIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={author} onChange={(e) => setAuthor(e.target.value)} required />
+                  </div>
                   </label>
                   <label className={tw.field}>
                     <span>Language</span>
+                    <div className={tw.control}>
+                    <GlobeIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={language} onChange={(e) => setLanguage(e.target.value)} required />
+                  </div>
                   </label>
                 </div>
 
@@ -204,6 +249,7 @@ export const BooksTab: React.FC = () => {
                         </p>
                         <div className="flex flex-col gap-2 sm:flex-row">
                           <label className={tw.secondaryBtn}>
+                            <ImageIcon size={16} />
                             Replace Cover
                             <input
                               type="file"
@@ -234,6 +280,7 @@ export const BooksTab: React.FC = () => {
                         loadCoverFile(e.dataTransfer.files?.[0]);
                       }}
                     >
+                      <ImageIcon size={30} className="mb-3 text-gold-bright" />
                       <span className="text-sm font-bold text-text-main">Drag & drop cover image here</span>
                       <span className="mt-1 text-xs text-text-dim">or click to browse PNG, JPG, or WEBP</span>
                       <input
@@ -249,43 +296,67 @@ export const BooksTab: React.FC = () => {
                 <div className="grid gap-4 md:grid-cols-[1.5fr_1fr]">
                   <label className={tw.field}>
                     <span>Category</span>
+                    <div className={tw.control}>
+                    <TagIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={category} onChange={(e) => setCategory(e.target.value)} required />
+                  </div>
                   </label>
                   <label className={tw.field}>
                     <span>Publishing House</span>
+                    <div className={tw.control}>
+                    <BuildingIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={publisher} onChange={(e) => setPublisher(e.target.value)} required />
+                  </div>
                   </label>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <label className={tw.field}>
                     <span>Print Copy Price (Rs.)</span>
+                    <div className={tw.control}>
+                    <DollarIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} type="number" value={printPrice} onChange={(e) => setPrintPrice(Number(e.target.value) || 0)} required />
+                  </div>
                   </label>
                   <label className={tw.field}>
                     <span>E-Book Price (Rs.)</span>
+                    <div className={tw.control}>
+                    <DollarIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} type="number" value={ebookPrice} onChange={(e) => setEbookPrice(Number(e.target.value) || 0)} required />
+                  </div>
                   </label>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
                   <label className={tw.field}>
                     <span>Page Count</span>
+                    <div className={tw.control}>
+                    <FileTextIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} type="number" value={pages} onChange={(e) => setPages(Number(e.target.value) || 0)} required />
+                  </div>
                   </label>
                   <label className={tw.field}>
                     <span>Published Year</span>
+                    <div className={tw.control}>
+                    <CalendarIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={published} onChange={(e) => setPublished(e.target.value)} required />
+                  </div>
                   </label>
                   <label className={tw.field}>
                     <span>ISBN Code</span>
+                    <div className={tw.control}>
+                    <HashIcon className={tw.fieldIcon} size={18} />
                     <input className={tw.input} value={isbn} onChange={(e) => setIsbn(e.target.value)} required />
+                  </div>
                   </label>
                 </div>
 
                 <label className={tw.field}>
                   <span>Book Synopsis / Description</span>
-                  <textarea className={tw.textarea} value={description} onChange={(e) => setDescription(e.target.value)} required />
+                  <div className={tw.control}>
+                    <FileTextIcon className={tw.textareaIcon} size={18} />
+                    <textarea className={tw.textarea} value={description} onChange={(e) => setDescription(e.target.value)} required />
+                  </div>
                 </label>
               </div>
 

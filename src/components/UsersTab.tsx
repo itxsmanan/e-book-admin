@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { useAdminAuth } from "../context/AuthContext";
 import type { User } from "../context/AuthContext";
-import { CloseIcon, SearchIcon, TrashIcon } from "./Icons";
+import {
+  CheckIcon,
+  CloseIcon,
+  LockIcon,
+  MailIcon,
+  SearchIcon,
+  SubscriptionIcon,
+  TrashIcon,
+  UserIcon,
+  UsersIcon,
+} from "./Icons";
 import { statusBadge, tw } from "./adminTailwind";
 
 type SubscriptionName = User["subscription"];
@@ -16,7 +26,8 @@ const avatarOptions = [
 ];
 
 export const UsersTab: React.FC = () => {
-  const { users, toggleUserStatus, deleteUser, addUser, booksList } = useAdminAuth();
+  const { users, toggleUserStatus, deleteUser, addUser, booksList } =
+    useAdminAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -31,9 +42,11 @@ export const UsersTab: React.FC = () => {
   const filteredUsers = users.filter((user) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
-      user.name.toLowerCase().includes(term) || user.email.toLowerCase().includes(term);
+      user.name.toLowerCase().includes(term) ||
+      user.email.toLowerCase().includes(term);
     const matchesRole = roleFilter === "All" || user.role === roleFilter;
-    const matchesStatus = statusFilter === "All" || user.status === statusFilter;
+    const matchesStatus =
+      statusFilter === "All" || user.status === statusFilter;
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -81,24 +94,38 @@ export const UsersTab: React.FC = () => {
           />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 lg:w-auto">
-          <select className={tw.select} value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-            <option value="All">All Roles</option>
-            <option value="Admin">Admin</option>
-            <option value="User">User</option>
-          </select>
-          <select
-            className={tw.select}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+        <div className="grid gap-3 sm:grid-cols-2 lg:w-auto">
+          <div className={tw.control}>
+            <UsersIcon className={tw.fieldIcon} size={18} />
+            <select
+              className={tw.select}
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+            >
+              <option value="All">All Roles</option>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+            </select>
+          </div>
+          <div className={tw.control}>
+            <CheckIcon className={tw.fieldIcon} size={18} />
+            <select
+              className={tw.select}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+          {/* <button
+            className={tw.primaryBtn}
+            onClick={() => setShowAddModal(true)}
+            type="button"
           >
-            <option value="All">All Statuses</option>
-            <option value="Active">Active</option>
-            <option value="Suspended">Suspended</option>
-          </select>
-          <button className={tw.primaryBtn} onClick={() => setShowAddModal(true)} type="button">
             Add User
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -106,8 +133,18 @@ export const UsersTab: React.FC = () => {
         <table className="w-full text-left">
           <thead className="bg-midnight/45 text-xs uppercase tracking-wider text-text-dim">
             <tr>
-              {["User", "Role", "Joined", "Subscription", "Status", "Actions"].map((head) => (
-                <th key={head} className="px-5 py-4 font-extrabold last:text-right">
+              {[
+                "User",
+                "Role",
+                "Joined",
+                "Subscription",
+                "Status",
+                "Actions",
+              ].map((head) => (
+                <th
+                  key={head}
+                  className="px-5 py-4 font-extrabold last:text-right"
+                >
                   {head}
                 </th>
               ))}
@@ -115,7 +152,10 @@ export const UsersTab: React.FC = () => {
           </thead>
           <tbody className="divide-y divide-white/5">
             {filteredUsers.map((user) => (
-              <tr key={user.id} className="transition hover:bg-text-main/[0.03]">
+              <tr
+                key={user.id}
+                className="transition hover:bg-text-main/[0.03]"
+              >
                 <td className="px-5 py-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-text-main/10 bg-navy/40 text-xs font-black text-gold-bright">
@@ -123,30 +163,50 @@ export const UsersTab: React.FC = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="font-bold text-text-main">{user.name}</p>
-                      <p className="break-all text-xs text-text-dim">{user.email}</p>
+                      <p className="break-all text-xs text-text-dim">
+                        {user.email}
+                      </p>
                     </div>
                   </div>
                 </td>
                 <td className="px-5 py-4">
-                  <span className={`${tw.badge} ${tw.neutralBadge}`}>{user.role}</span>
+                  <span className={`${tw.badge} ${tw.neutralBadge}`}>
+                    {user.role}
+                  </span>
                 </td>
-                <td className="px-5 py-4 text-sm text-text-dim">{user.joinedDate}</td>
-                <td className="px-5 py-4 text-sm text-text-main">{user.subscription}</td>
+                <td className="px-5 py-4 text-sm text-text-dim">
+                  {user.joinedDate}
+                </td>
+                <td className="px-5 py-4 text-sm text-text-main">
+                  {user.subscription}
+                </td>
                 <td className="px-5 py-4">
-                  <span className={statusBadge(user.status)}>{user.status}</span>
+                  <span className={statusBadge(user.status)}>
+                    {user.status}
+                  </span>
                 </td>
                 <td className="px-5 py-4">
                   <div className="flex justify-end gap-2">
-                    <button className={tw.secondaryBtn} onClick={() => setSelectedUser(user)}>
+                    <button
+                      className={tw.secondaryBtn}
+                      onClick={() => setSelectedUser(user)}
+                    >
                       Details
                     </button>
                     <button
-                      className={user.status === "Active" ? tw.dangerBtn : tw.secondaryBtn}
+                      className={
+                        user.status === "Active"
+                          ? tw.dangerBtn
+                          : tw.secondaryBtn
+                      }
                       onClick={() => toggleUserStatus(user.id)}
                     >
                       {user.status === "Active" ? "Suspend" : "Activate"}
                     </button>
-                    <button className={tw.dangerIconBtn} onClick={() => deleteUser(user.id)}>
+                    <button
+                      className={tw.dangerIconBtn}
+                      onClick={() => deleteUser(user.id)}
+                    >
                       <TrashIcon size={16} />
                     </button>
                   </div>
@@ -171,28 +231,41 @@ export const UsersTab: React.FC = () => {
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-xl bg-midnight/25 p-3">
-                <span className="block text-xs uppercase text-text-dim">Role</span>
+                <span className="block text-xs uppercase text-text-dim">
+                  Role
+                </span>
                 <strong>{user.role}</strong>
               </div>
               <div className="rounded-xl bg-midnight/25 p-3">
-                <span className="block text-xs uppercase text-text-dim">Plan</span>
+                <span className="block text-xs uppercase text-text-dim">
+                  Plan
+                </span>
                 <strong>{user.subscription}</strong>
               </div>
               <div className="rounded-xl bg-midnight/25 p-3">
-                <span className="block text-xs uppercase text-text-dim">Joined</span>
+                <span className="block text-xs uppercase text-text-dim">
+                  Joined
+                </span>
                 <strong>{user.joinedDate}</strong>
               </div>
               <div className="rounded-xl bg-midnight/25 p-3">
-                <span className="block text-xs uppercase text-text-dim">Status</span>
+                <span className="block text-xs uppercase text-text-dim">
+                  Status
+                </span>
                 <span className={statusBadge(user.status)}>{user.status}</span>
               </div>
             </div>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <button className={tw.secondaryBtn} onClick={() => setSelectedUser(user)}>
+              <button
+                className={tw.secondaryBtn}
+                onClick={() => setSelectedUser(user)}
+              >
                 Details
               </button>
               <button
-                className={user.status === "Active" ? tw.dangerBtn : tw.secondaryBtn}
+                className={
+                  user.status === "Active" ? tw.dangerBtn : tw.secondaryBtn
+                }
                 onClick={() => toggleUserStatus(user.id)}
               >
                 {user.status === "Active" ? "Suspend" : "Activate"}
@@ -213,7 +286,10 @@ export const UsersTab: React.FC = () => {
           <div className={tw.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={tw.modalHeader}>
               <h3 className={tw.modalTitle}>User Profile Details</h3>
-              <button className={tw.iconBtn} onClick={() => setSelectedUser(null)}>
+              <button
+                className={tw.iconBtn}
+                onClick={() => setSelectedUser(null)}
+              >
                 <CloseIcon size={20} />
               </button>
             </div>
@@ -223,11 +299,19 @@ export const UsersTab: React.FC = () => {
                   {selectedUser.avatar.slice(0, 2)}
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xl font-black text-text-main">{selectedUser.name}</h4>
-                  <p className="break-all text-sm text-text-dim">{selectedUser.email}</p>
+                  <h4 className="text-xl font-black text-text-main">
+                    {selectedUser.name}
+                  </h4>
+                  <p className="break-all text-sm text-text-dim">
+                    {selectedUser.email}
+                  </p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <span className={`${tw.badge} ${tw.neutralBadge}`}>{selectedUser.role}</span>
-                    <span className={statusBadge(selectedUser.status)}>{selectedUser.status}</span>
+                    <span className={`${tw.badge} ${tw.neutralBadge}`}>
+                      {selectedUser.role}
+                    </span>
+                    <span className={statusBadge(selectedUser.status)}>
+                      {selectedUser.status}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -239,8 +323,13 @@ export const UsersTab: React.FC = () => {
                   ["Joined Date", selectedUser.joinedDate],
                   ["Subscription Tier", selectedUser.subscription],
                 ].map(([label, value]) => (
-                  <div key={label} className="rounded-xl border border-text-main/10 bg-midnight/25 p-4">
-                    <span className="text-xs font-extrabold uppercase text-text-dim">{label}</span>
+                  <div
+                    key={label}
+                    className="rounded-xl border border-text-main/10 bg-midnight/25 p-4"
+                  >
+                    <span className="text-xs font-extrabold uppercase text-text-dim">
+                      {label}
+                    </span>
                     <p className="mt-1 font-bold text-text-main">{value}</p>
                   </div>
                 ))}
@@ -248,36 +337,52 @@ export const UsersTab: React.FC = () => {
 
               <div className="rounded-xl border border-text-main/10 bg-midnight/25 p-4">
                 <span className="text-xs font-extrabold uppercase text-text-dim">
-                  Purchased / Borrowed Books ({selectedUser.purchasedBooks.length})
+                  Purchased / Borrowed Books (
+                  {selectedUser.purchasedBooks.length})
                 </span>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {selectedUser.purchasedBooks.length > 0 ? (
                     selectedUser.purchasedBooks.map((bId) => (
-                      <span key={bId} className={`${tw.badge} ${tw.neutralBadge}`}>
+                      <span
+                        key={bId}
+                        className={`${tw.badge} ${tw.neutralBadge}`}
+                      >
                         {getBookTitle(bId)}
                       </span>
                     ))
                   ) : (
-                    <p className="text-sm text-text-dim">No books purchased or checked out.</p>
+                    <p className="text-sm text-text-dim">
+                      No books purchased or checked out.
+                    </p>
                   )}
                 </div>
               </div>
             </div>
             <div className={tw.modalFooter}>
-              <button className={tw.secondaryBtn} onClick={() => setSelectedUser(null)}>
+              <button
+                className={tw.secondaryBtn}
+                onClick={() => setSelectedUser(null)}
+              >
                 Close
               </button>
               <button
-                className={selectedUser.status === "Active" ? tw.dangerBtn : tw.primaryBtn}
+                className={
+                  selectedUser.status === "Active"
+                    ? tw.dangerBtn
+                    : tw.primaryBtn
+                }
                 onClick={() => {
                   toggleUserStatus(selectedUser.id);
                   setSelectedUser({
                     ...selectedUser,
-                    status: selectedUser.status === "Active" ? "Suspended" : "Active",
+                    status:
+                      selectedUser.status === "Active" ? "Suspended" : "Active",
                   });
                 }}
               >
-                {selectedUser.status === "Active" ? "Suspend Account" : "Activate Account"}
+                {selectedUser.status === "Active"
+                  ? "Suspend Account"
+                  : "Activate Account"}
               </button>
             </div>
           </div>
@@ -289,73 +394,106 @@ export const UsersTab: React.FC = () => {
           <div className={tw.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={tw.modalHeader}>
               <h3 className={tw.modalTitle}>Create User Account</h3>
-              <button className={tw.iconBtn} onClick={() => setShowAddModal(false)}>
+              <button
+                className={tw.iconBtn}
+                onClick={() => setShowAddModal(false)}
+              >
                 <CloseIcon size={20} />
               </button>
             </div>
-            <form className="flex min-h-0 flex-1 flex-col" onSubmit={handleAddUserSubmit}>
+            <form
+              className="flex min-h-0 flex-1 flex-col"
+              onSubmit={handleAddUserSubmit}
+            >
               <div className={tw.modalBody}>
                 <label className={tw.field}>
                   <span>Full Name</span>
-                  <input
-                    className={tw.input}
-                    type="text"
-                    value={newUserName}
-                    onChange={(e) => setNewUserName(e.target.value)}
-                    required
-                  />
+                  <div className={tw.control}>
+                    <UserIcon className={tw.fieldIcon} size={18} />
+                    <input
+                      className={tw.input}
+                      type="text"
+                      value={newUserName}
+                      onChange={(e) => setNewUserName(e.target.value)}
+                      required
+                    />
+                  </div>
                 </label>
                 <label className={tw.field}>
                   <span>Email Address</span>
-                  <input
-                    className={tw.input}
-                    type="email"
-                    value={newUserEmail}
-                    onChange={(e) => setNewUserEmail(e.target.value)}
-                    required
-                  />
+                  <div className={tw.control}>
+                    <MailIcon className={tw.fieldIcon} size={18} />
+                    <input
+                      className={tw.input}
+                      type="email"
+                      value={newUserEmail}
+                      onChange={(e) => setNewUserEmail(e.target.value)}
+                      required
+                    />
+                  </div>
                 </label>
                 <label className={tw.field}>
                   <span>Avatar Label</span>
-                  <select className={tw.select} value={newUserAvatar} onChange={(e) => setNewUserAvatar(e.target.value)}>
-                    {avatarOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
+                  <div className={tw.control}>
+                    <UserIcon className={tw.fieldIcon} size={18} />
+                    <select
+                      className={tw.select}
+                      value={newUserAvatar}
+                      onChange={(e) => setNewUserAvatar(e.target.value)}
+                    >
+                      {avatarOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className={tw.field}>
                     <span>Security Role</span>
-                    <select
-                      className={tw.select}
-                      value={newUserRole}
-                      onChange={(e) => setNewUserRole(e.target.value as User["role"])}
-                    >
-                      <option value="User">User</option>
-                      <option value="Admin">Admin</option>
-                    </select>
+                    <div className={tw.control}>
+                      <LockIcon className={tw.fieldIcon} size={18} />
+                      <select
+                        className={tw.select}
+                        value={newUserRole}
+                        onChange={(e) =>
+                          setNewUserRole(e.target.value as User["role"])
+                        }
+                      >
+                        <option value="User">User</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                    </div>
                   </label>
                   <label className={tw.field}>
                     <span>Subscription Tier</span>
-                    <select
-                      className={tw.select}
-                      value={newUserSub}
-                      onChange={(e) => setNewUserSub(e.target.value as SubscriptionName)}
-                    >
-                      <option value="None">None</option>
-                      <option value="Monthly">Monthly</option>
-                      <option value="Quarterly">Quarterly</option>
-                      <option value="Half-Yearly">Half-Yearly</option>
-                      <option value="9-Month Plan">9-Month Plan</option>
-                      <option value="Annual">Annual</option>
-                    </select>
+                    <div className={tw.control}>
+                      <SubscriptionIcon className={tw.fieldIcon} size={18} />
+                      <select
+                        className={tw.select}
+                        value={newUserSub}
+                        onChange={(e) =>
+                          setNewUserSub(e.target.value as SubscriptionName)
+                        }
+                      >
+                        <option value="None">None</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Half-Yearly">Half-Yearly</option>
+                        <option value="9-Month Plan">9-Month Plan</option>
+                        <option value="Annual">Annual</option>
+                      </select>
+                    </div>
                   </label>
                 </div>
               </div>
               <div className={tw.modalFooter}>
-                <button className={tw.secondaryBtn} type="button" onClick={() => setShowAddModal(false)}>
+                <button
+                  className={tw.secondaryBtn}
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                >
                   Cancel
                 </button>
                 <button className={tw.primaryBtn} type="submit">

@@ -39,12 +39,16 @@ export const tw = {
     "flex flex-col-reverse gap-3 border-t border-text-main/10 p-4 sm:flex-row sm:justify-end sm:p-5",
   field:
     "grid gap-2 text-left [&_label]:text-xs [&_label]:font-extrabold [&_label]:uppercase [&_label]:tracking-wider [&_label]:text-text-dim",
+  control: "relative",
+  fieldIcon:
+    "pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gold/80",
+  textareaIcon: "pointer-events-none absolute left-4 top-4 text-gold/80",
   input:
-    "w-full rounded-xl border border-text-main/10 bg-midnight/35 px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-dim/70 focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
+    "w-full rounded-xl border border-text-main/10 bg-midnight/35 pl-11 pr-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-dim/70 focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
   textarea:
-    "min-h-32 w-full resize-y rounded-xl border border-text-main/10 bg-midnight/35 px-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-dim/70 focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
+    "min-h-32 w-full resize-y rounded-xl border border-text-main/10 bg-midnight/35 pl-11 pr-4 py-3 text-sm text-text-main outline-none transition placeholder:text-text-dim/70 focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
   select:
-    "w-full appearance-none rounded-xl border border-text-main/10 bg-midnight/35 px-4 py-3 text-sm text-text-main outline-none transition focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
+    "w-full appearance-none rounded-xl border border-text-main/10 bg-midnight/35 pl-11 pr-4 py-3 text-sm text-text-main outline-none transition focus:border-gold focus:bg-midnight/55 focus:shadow-[0_0_0_3px_rgba(201,169,98,0.12)]",
 };
 
 export const statusBadge = (status: "Active" | "Suspended") =>

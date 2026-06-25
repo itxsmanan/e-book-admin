@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAdminAuth } from "../context/AuthContext";
 import type { SubscriptionPlan } from "../context/AuthContext";
-import { CloseIcon } from "./Icons";
+import { CloseIcon, DollarIcon, StarIcon, TagIcon, TypeIcon } from "./Icons";
 import { tw } from "./adminTailwind";
 
 export const SubscriptionsTab: React.FC = () => {
@@ -96,37 +96,46 @@ export const SubscriptionsTab: React.FC = () => {
               <div className={tw.modalBody}>
                 <label className={tw.field}>
                   <span>Plan Price (Rs.)</span>
-                  <input
-                    className={tw.input}
-                    type="number"
-                    placeholder="e.g. 499"
-                    value={price}
-                    onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
-                    required
-                  />
+                  <div className={tw.control}>
+                    <DollarIcon className={tw.fieldIcon} size={18} />
+                    <input
+                      className={tw.input}
+                      type="number"
+                      placeholder="e.g. 499"
+                      value={price}
+                      onChange={(e) => setPrice(parseInt(e.target.value) || 0)}
+                      required
+                    />
+                  </div>
                 </label>
 
                 <label className={tw.field}>
                   <span>Savings / Highlight Text</span>
-                  <input
-                    className={tw.input}
-                    type="text"
-                    placeholder="e.g. Save 20% - Rs. 400/month"
-                    value={saveText}
-                    onChange={(e) => setSaveText(e.target.value)}
-                    required
-                  />
+                  <div className={tw.control}>
+                    <TagIcon className={tw.fieldIcon} size={18} />
+                    <input
+                      className={tw.input}
+                      type="text"
+                      placeholder="e.g. Save 20% - Rs. 400/month"
+                      value={saveText}
+                      onChange={(e) => setSaveText(e.target.value)}
+                      required
+                    />
+                  </div>
                 </label>
 
                 <label className={tw.field}>
                   <span>Plan Highlight Badge</span>
-                  <input
-                    className={tw.input}
-                    type="text"
-                    placeholder="e.g. Most Popular"
-                    value={badge}
-                    onChange={(e) => setBadge(e.target.value)}
-                  />
+                  <div className={tw.control}>
+                    <StarIcon className={tw.fieldIcon} size={18} />
+                    <input
+                      className={tw.input}
+                      type="text"
+                      placeholder="e.g. Most Popular"
+                      value={badge}
+                      onChange={(e) => setBadge(e.target.value)}
+                    />
+                  </div>
                 </label>
 
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -150,13 +159,16 @@ export const SubscriptionsTab: React.FC = () => {
 
                 <label className={tw.field}>
                   <span>Plan Perks / Features (One per line)</span>
-                  <textarea
-                    className={tw.textarea}
-                    placeholder={"Full E-Library access\nUnlimited book downloads\nAudio book streaming"}
-                    value={features}
-                    onChange={(e) => setFeatures(e.target.value)}
-                    required
-                  />
+                  <div className={tw.control}>
+                    <TypeIcon className={tw.textareaIcon} size={18} />
+                    <textarea
+                      className={tw.textarea}
+                      placeholder={"Full E-Library access\nUnlimited book downloads\nAudio book streaming"}
+                      value={features}
+                      onChange={(e) => setFeatures(e.target.value)}
+                      required
+                    />
+                  </div>
                 </label>
               </div>
 
