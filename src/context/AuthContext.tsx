@@ -108,6 +108,31 @@ export interface Payment {
   createdAt: string;
 }
 
+export interface Order {
+  id: string;
+  orderNumber: string;
+  paymentId: string;
+  transactionId: string;
+  customerName: string;
+  customerEmail: string;
+  phone: string;
+  bookTitle: string;
+  quantity: number;
+  subtotal: number;
+  shipping: number;
+  total: number;
+  paymentMethod: string;
+  paymentStatus: 'Paid' | 'Pending' | 'Failed' | string;
+  orderStatus: 'Processing' | 'Packed' | 'Shipped' | 'Delivered' | 'Cancelled' | string;
+  shippingAddress?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  notes?: string;
+  date: string;
+  createdAt: string;
+}
+
 interface AuthContextType {
   // Authentication
   isAuthenticated: boolean;
@@ -150,6 +175,10 @@ interface AuthContextType {
 
   // Payments
   paymentsList: Payment[];
+
+  // Orders
+  ordersList: Order[];
+  updateOrderStatus: (id: string, status: Order['orderStatus']) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -247,7 +276,7 @@ const initialPayments: Payment[] = [
     transactionId: 'KKD-20260619-179900',
     customerName: 'Sajid Kakar',
     customerEmail: 'sajid.kakar@gmail.com',
-    phone: '+92 335 5495173',
+    phone: '03410889909',
     itemName: 'The Power of Minor Shift (Hard Copy)',
     itemType: 'Book',
     method: 'JazzCash',
@@ -255,6 +284,31 @@ const initialPayments: Payment[] = [
     shipping: 499,
     amount: 1799,
     status: 'Paid',
+    date: '2026-06-19',
+    createdAt: '2026-06-19T15:45:00.000Z',
+  },
+];
+
+const initialOrders: Order[] = [
+  {
+    id: 'ord-demo-1',
+    orderNumber: 'ORD-20260619-179900',
+    paymentId: 'pay-demo-2',
+    transactionId: 'KKD-20260619-179900',
+    customerName: 'Sajid Kakar',
+    customerEmail: 'sajid.kakar@gmail.com',
+    phone: '03410889909',
+    bookTitle: 'The Power of Minor Shift',
+    quantity: 1,
+    subtotal: 1300,
+    shipping: 499,
+    total: 1799,
+    paymentMethod: 'JazzCash',
+    paymentStatus: 'Paid',
+    orderStatus: 'Processing',
+    shippingAddress: '',
+    city: '',
+    notes: 'Demo hard-copy order from website checkout.',
     date: '2026-06-19',
     createdAt: '2026-06-19T15:45:00.000Z',
   },
@@ -295,6 +349,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [plansList, setPlansList] = useState<SubscriptionPlan[]>([]);
   const [inquiriesList, setInquiriesList] = useState<Inquiry[]>([]);
   const [paymentsList, setPaymentsList] = useState<Payment[]>([]);
+  const [ordersList, setOrdersList] = useState<Order[]>([]);
 
   // Load from local storage
   useEffect(() => {
@@ -340,6 +395,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       localStorage.setItem('kitabon_payments', JSON.stringify(initialPayments));
       setPaymentsList(initialPayments);
+    }
+
+    // Orders loading
+    const localOrders = localStorage.getItem('kitabon_orders');
+    if (localOrders) {
+      setOrdersList(JSON.parse(localOrders));
+    } else {
+      localStorage.setItem('kitabon_orders', JSON.stringify(initialOrders));
+      setOrdersList(initialOrders);
     }
 
     // Audiobooks loading
@@ -511,6 +575,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (event.key === 'kitabon_payments') {
         setPaymentsList(JSON.parse(event.newValue));
       }
+      if (event.key === 'kitabon_orders') {
+        setOrdersList(JSON.parse(event.newValue));
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -554,6 +621,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const syncInquiries = (newInquiries: Inquiry[]) => {
     setInquiriesList(newInquiries);
     localStorage.setItem('kitabon_inquiries', JSON.stringify(newInquiries));
+  };
+
+  const syncOrders = (newOrders: Order[]) => {
+    setOrdersList(newOrders);
+    localStorage.setItem('kitabon_orders', JSON.stringify(newOrders));
   };
 
   // Auth Functions
@@ -671,6 +743,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     syncInquiries(updated);
   };
 
+  // Order Actions
+  const updateOrderStatus = (id: string, status: Order['orderStatus']) => {
+    const updated = ordersList.map(order =>
+      order.id === id ? { ...order, orderStatus: status } : order
+    );
+    syncOrders(updated);
+  };
+
   // Audiobook Actions
   const createAudiobook = (audiobook: Omit<Audiobook, 'id'>) => {
     const maxId = audiobooksList.reduce((max, a) => a.id > max ? a.id : max, 0);
@@ -700,7 +780,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       audiobooksList, createAudiobook, updateAudiobook, deleteAudiobook,
       plansList, updatePlan,
       inquiriesList, resolveInquiry, deleteInquiry,
-      paymentsList
+      paymentsList,
+      ordersList, updateOrderStatus
     }}>
       {children}
     </AuthContext.Provider>

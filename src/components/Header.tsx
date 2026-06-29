@@ -38,6 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ setIsMobileOpen }) => {
     if (path.includes('/events')) return 'Literary Events Manager';
     if (path.includes('/subscriptions')) return 'Subscription Pricing Plans';
     if (path.includes('/books')) return 'Library Books Catalog';
+    if (path.includes('/orders')) return 'Book Orders';
     if (path.includes('/inquiries')) return 'Reader Inquiries & Support';
     if (path.includes('/payments')) return 'Payments History';
     return 'Admin Panel';
