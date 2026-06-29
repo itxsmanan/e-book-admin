@@ -52,6 +52,19 @@ export interface Book {
   published: string;
   ebookPrice: number;
   printPrice: number;
+  pdfFile?: string;
+}
+
+export interface Audiobook {
+  id: number;
+  title: string;
+  narrator: string;
+  duration: string;
+  genre: string;
+  price: number;
+  coverIcon: string;
+  waveColor: string;
+  audioFile?: string;
 }
 
 export interface SubscriptionPlan {
@@ -70,9 +83,29 @@ export interface Inquiry {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  subject?: string;
   message: string;
   date: string;
   status: 'Pending' | 'Resolved';
+  source?: string;
+}
+
+export interface Payment {
+  id: string;
+  transactionId: string;
+  customerName: string;
+  customerEmail: string;
+  phone: string;
+  itemName: string;
+  itemType: 'Subscription' | 'Book' | 'Audiobook';
+  method: 'EasyPaisa' | 'JazzCash' | string;
+  subtotal: number;
+  shipping: number;
+  amount: number;
+  status: 'Paid' | 'Pending' | 'Failed' | string;
+  date: string;
+  createdAt: string;
 }
 
 interface AuthContextType {
@@ -100,6 +133,12 @@ interface AuthContextType {
   updateBook: (id: number, updatedBook: Partial<Book>) => void;
   deleteBook: (id: number) => void;
 
+  // Audiobooks CRUD
+  audiobooksList: Audiobook[];
+  createAudiobook: (audiobook: Omit<Audiobook, 'id'>) => void;
+  updateAudiobook: (id: number, updatedAudiobook: Partial<Audiobook>) => void;
+  deleteAudiobook: (id: number) => void;
+
   // Subscription Plans
   plansList: SubscriptionPlan[];
   updatePlan: (name: string, updatedPlan: Partial<SubscriptionPlan>) => void;
@@ -108,6 +147,9 @@ interface AuthContextType {
   inquiriesList: Inquiry[];
   resolveInquiry: (id: string) => void;
   deleteInquiry: (id: string) => void;
+
+  // Payments
+  paymentsList: Payment[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -183,6 +225,64 @@ const initialInquiries: Inquiry[] = [
   { id: 'inq-3', name: 'Prof. Tariq', email: 'tariq@uob.edu.pk', message: 'Excellent website and audio library! Is there a plan to publish Dolat Khan Kakar sahib\'s legal analysis articles as a separate book in the near future?', date: '2026-06-18', status: 'Resolved' }
 ];
 
+const initialPayments: Payment[] = [
+  {
+    id: 'pay-demo-1',
+    transactionId: 'KKD-20260620-129900',
+    customerName: 'Amna Malik',
+    customerEmail: 'amna.m@gmail.com',
+    phone: '+92 300 1234567',
+    itemName: 'Quarterly Subscription',
+    itemType: 'Subscription',
+    method: 'EasyPaisa',
+    subtotal: 1299,
+    shipping: 0,
+    amount: 1299,
+    status: 'Paid',
+    date: '2026-06-20',
+    createdAt: '2026-06-20T10:30:00.000Z',
+  },
+  {
+    id: 'pay-demo-2',
+    transactionId: 'KKD-20260619-179900',
+    customerName: 'Sajid Kakar',
+    customerEmail: 'sajid.kakar@gmail.com',
+    phone: '+92 335 5495173',
+    itemName: 'The Power of Minor Shift (Hard Copy)',
+    itemType: 'Book',
+    method: 'JazzCash',
+    subtotal: 1300,
+    shipping: 499,
+    amount: 1799,
+    status: 'Paid',
+    date: '2026-06-19',
+    createdAt: '2026-06-19T15:45:00.000Z',
+  },
+];
+
+const initialAudiobooks: Audiobook[] = [
+    {
+        id: 1,
+        title: 'The Silent Echo',
+        narrator: 'Ahmed Ali',
+        duration: '8 hrs 32 min',
+        genre: 'Fiction • Thriller',
+        price: 899,
+        coverIcon: 'FaHeadphones',
+        waveColor: '#C9A962',
+    },
+    {
+        id: 2,
+        title: 'Mindful Leadership',
+        narrator: 'Sara Khan',
+        duration: '6 hrs 15 min',
+        genre: 'Self-Help • Business',
+        price: 1199,
+        coverIcon: 'FaMicrophone',
+        waveColor: '#D4664A',
+    },
+];
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [adminUser, setAdminUser] = useState<{ name: string; email: string; role: string } | null>(null);
@@ -191,8 +291,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [users, setUsers] = useState<User[]>([]);
   const [eventsList, setEventsList] = useState<Event[]>([]);
   const [booksList, setBooksList] = useState<Book[]>([]);
+  const [audiobooksList, setAudiobooksList] = useState<Audiobook[]>([]);
   const [plansList, setPlansList] = useState<SubscriptionPlan[]>([]);
   const [inquiriesList, setInquiriesList] = useState<Inquiry[]>([]);
+  const [paymentsList, setPaymentsList] = useState<Payment[]>([]);
 
   // Load from local storage
   useEffect(() => {
@@ -229,6 +331,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       localStorage.setItem('kitabon_inquiries', JSON.stringify(initialInquiries));
       setInquiriesList(initialInquiries);
+    }
+
+    // Payments loading
+    const localPayments = localStorage.getItem('kitabon_payments');
+    if (localPayments) {
+      setPaymentsList(JSON.parse(localPayments));
+    } else {
+      localStorage.setItem('kitabon_payments', JSON.stringify(initialPayments));
+      setPaymentsList(initialPayments);
+    }
+
+    // Audiobooks loading
+    const localAudiobooks = localStorage.getItem('kitabon_audiobooks');
+    if (localAudiobooks) {
+      setAudiobooksList(JSON.parse(localAudiobooks));
+    } else {
+      localStorage.setItem('kitabon_audiobooks', JSON.stringify(initialAudiobooks));
+      setAudiobooksList(initialAudiobooks);
     }
 
     // Events loading (uses defaultEvents if not present)
@@ -382,6 +502,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (!event.newValue) return;
+      if (event.key === 'kitabon_inquiries') {
+        setInquiriesList(JSON.parse(event.newValue));
+      }
+      if (event.key === 'kitabon_payments') {
+        setPaymentsList(JSON.parse(event.newValue));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Update localStorage helper
   const syncUsers = (newUsers: User[]) => {
     setUsers(newUsers);
@@ -404,6 +539,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       obj[b.id] = b;
     });
     localStorage.setItem('kitabon_books', JSON.stringify(obj));
+  };
+
+  const syncAudiobooks = (newAudiobooks: Audiobook[]) => {
+    setAudiobooksList(newAudiobooks);
+    localStorage.setItem('kitabon_audiobooks', JSON.stringify(newAudiobooks));
   };
 
   const syncPlans = (newPlans: SubscriptionPlan[]) => {
@@ -531,14 +671,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     syncInquiries(updated);
   };
 
+  // Audiobook Actions
+  const createAudiobook = (audiobook: Omit<Audiobook, 'id'>) => {
+    const maxId = audiobooksList.reduce((max, a) => a.id > max ? a.id : max, 0);
+    const newAudiobook: Audiobook = {
+      ...audiobook,
+      id: maxId + 1
+    };
+    syncAudiobooks([...audiobooksList, newAudiobook]);
+  };
+
+  const updateAudiobook = (id: number, updatedAudiobook: Partial<Audiobook>) => {
+    const updated = audiobooksList.map(a => a.id === id ? { ...a, ...updatedAudiobook } : a);
+    syncAudiobooks(updated);
+  };
+
+  const deleteAudiobook = (id: number) => {
+    const updated = audiobooksList.filter(a => a.id !== id);
+    syncAudiobooks(updated);
+  };
+
   return (
     <AuthContext.Provider value={{
       isAuthenticated, adminUser, login, logout,
       users, toggleUserStatus, deleteUser, addUser,
       eventsList, createEvent, updateEvent, deleteEvent,
       booksList, createBook, updateBook, deleteBook,
+      audiobooksList, createAudiobook, updateAudiobook, deleteAudiobook,
       plansList, updatePlan,
-      inquiriesList, resolveInquiry, deleteInquiry
+      inquiriesList, resolveInquiry, deleteInquiry,
+      paymentsList
     }}>
       {children}
     </AuthContext.Provider>

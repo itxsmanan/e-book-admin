@@ -31,6 +31,7 @@ export const BooksTab: React.FC = () => {
   const [author, setAuthor] = useState("Dolat Khan Kakar");
   const [category, setCategory] = useState("");
   const [cover, setCover] = useState("");
+  const [pdfFile, setPdfFile] = useState("");
   const [description, setDescription] = useState("");
   const [pages, setPages] = useState(300);
   const [language, setLanguage] = useState("English");
@@ -40,6 +41,16 @@ export const BooksTab: React.FC = () => {
   const [ebookPrice, setEbookPrice] = useState(500);
   const [printPrice, setPrintPrice] = useState(1000);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingPdf, setIsDraggingPdf] = useState(false);
+
+  const loadPdfFile = (file?: File) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === "string") setPdfFile(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const loadCoverFile = (file?: File) => {
     if (!file) return;
@@ -56,6 +67,7 @@ export const BooksTab: React.FC = () => {
     setAuthor("Dolat Khan Kakar");
     setCategory("");
     setCover("");
+    setPdfFile("");
     setDescription("");
     setPages(300);
     setLanguage("English");
@@ -73,6 +85,7 @@ export const BooksTab: React.FC = () => {
     setAuthor(book.author);
     setCategory(book.category);
     setCover(book.cover || "");
+    setPdfFile(book.pdfFile || "");
     setDescription(book.description);
     setPages(book.pages);
     setLanguage(book.language);
@@ -93,6 +106,7 @@ export const BooksTab: React.FC = () => {
       author,
       category,
       cover: cover || defaultCover,
+      pdfFile: pdfFile || "",
       description,
       pages: Number(pages),
       language,
@@ -225,7 +239,10 @@ export const BooksTab: React.FC = () => {
                     <span>Language</span>
                     <div className={tw.control}>
                     <GlobeIcon className={tw.fieldIcon} size={18} />
-                    <input className={tw.input} value={language} onChange={(e) => setLanguage(e.target.value)} required />
+                    <select className={tw.input} value={language} onChange={(e) => setLanguage(e.target.value)} required>
+                      <option value="English">English</option>
+                      <option value="Urdu">Urdu</option>
+                    </select>
                   </div>
                   </label>
                 </div>
@@ -287,6 +304,63 @@ export const BooksTab: React.FC = () => {
                         type="file"
                         accept="image/*"
                         onChange={(e) => loadCoverFile(e.target.files?.[0])}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </label>
+
+                <label className={tw.field}>
+                  <span>Book PDF File</span>
+                  {pdfFile ? (
+                    <div className="flex flex-col gap-4 rounded-2xl border border-text-main/10 bg-midnight/25 p-4 sm:flex-row sm:items-center">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl border border-text-main/10 bg-navy/50 text-gold-bright">
+                        <FileTextIcon size={24} />
+                      </div>
+                      <div className="grid flex-1 gap-3">
+                        <p className="font-bold text-text-main">
+                          {pdfFile.startsWith("data:") ? "Custom PDF File" : pdfFile}
+                        </p>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <label className={tw.secondaryBtn}>
+                            <FileTextIcon size={16} />
+                            Replace PDF
+                            <input
+                              type="file"
+                              accept="application/pdf"
+                              onChange={(e) => loadPdfFile(e.target.files?.[0])}
+                              className="hidden"
+                            />
+                          </label>
+                          <button className={tw.dangerBtn} type="button" onClick={() => setPdfFile("")}>
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <label
+                      className={`grid cursor-pointer place-items-center rounded-2xl border-2 border-dashed p-8 text-center transition ${
+                        isDraggingPdf ? "border-gold bg-gold/10" : "border-text-main/15 bg-midnight/25 hover:border-gold/50"
+                      }`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDraggingPdf(true);
+                      }}
+                      onDragLeave={() => setIsDraggingPdf(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDraggingPdf(false);
+                        loadPdfFile(e.dataTransfer.files?.[0]);
+                      }}
+                    >
+                      <FileTextIcon size={30} className="mb-3 text-gold-bright" />
+                      <span className="text-sm font-bold text-text-main">Drag & drop PDF file here</span>
+                      <span className="mt-1 text-xs text-text-dim">or click to browse .pdf files</span>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => loadPdfFile(e.target.files?.[0])}
                         className="hidden"
                       />
                     </label>

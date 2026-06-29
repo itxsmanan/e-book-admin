@@ -8,7 +8,9 @@ import {
   EventsIcon,
   SubscriptionIcon,
   BooksIcon,
+  HeadphonesIcon,
   InquiriesIcon,
+  DollarIcon,
   LogOutIcon
 } from './Icons';
 
@@ -36,7 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen 
     { path: '/events', name: 'Events', icon: <EventsIcon size={20} /> },
     { path: '/subscriptions', name: 'Subscriptions', icon: <SubscriptionIcon size={20} /> },
     { path: '/books', name: 'Books Catalog', icon: <BooksIcon size={20} /> },
+    { path: '/audiobooks', name: 'Audio Books', icon: <HeadphonesIcon size={20} /> },
     { path: '/inquiries', name: 'Inquiries', icon: <InquiriesIcon size={20} /> },
+    { path: '/payments', name: 'Payments', icon: <DollarIcon size={20} /> },
   ];
 
   return (

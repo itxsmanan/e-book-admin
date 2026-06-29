@@ -21,7 +21,11 @@ export const InquiriesTab: React.FC = () => {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
                   <h3 className="text-lg font-extrabold text-text-main">{inq.name}</h3>
-                  <p className="break-words text-sm text-text-dim">{inq.email}</p>
+                  <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm text-text-dim">
+                    <span className="break-words">{inq.email}</span>
+                    {inq.phone && <span>{inq.phone}</span>}
+                    {inq.source && <span>{inq.source}</span>}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
@@ -35,6 +39,12 @@ export const InquiriesTab: React.FC = () => {
                   </span>
                 </div>
               </div>
+
+              {inq.subject && (
+                <div className="mt-4 rounded-xl border border-gold/20 bg-gold/10 px-4 py-3 text-sm font-bold text-gold-bright">
+                  {inq.subject}
+                </div>
+              )}
 
               <p className="mt-5 rounded-xl border border-text-main/10 bg-midnight/25 p-4 text-sm leading-7 text-text-main">
                 {inq.message}

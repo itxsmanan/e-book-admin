@@ -70,4 +70,8 @@
   ::-webkit-scrollbar-thumb:hover {
     opacity: 0.5;
   }
+
+  .admin-main-scroll {
+    scrollbar-gutter: stable;
+  }
 }

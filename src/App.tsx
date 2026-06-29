@@ -9,7 +9,9 @@ import { UsersTab } from './components/UsersTab';
 import { EventsTab } from './components/EventsTab';
 import { SubscriptionsTab } from './components/SubscriptionsTab';
 import { BooksTab } from './components/BooksTab';
+import { AudiobooksTab } from './components/AudiobooksTab';
 import { InquiriesTab } from './components/InquiriesTab';
+import { PaymentsTab } from './components/PaymentsTab';
 
 export const App: React.FC = () => {
   return (
@@ -31,7 +33,9 @@ export const App: React.FC = () => {
             <Route path="events" element={<EventsTab />} />
             <Route path="subscriptions" element={<SubscriptionsTab />} />
             <Route path="books" element={<BooksTab />} />
+            <Route path="audiobooks" element={<AudiobooksTab />} />
             <Route path="inquiries" element={<InquiriesTab />} />
+            <Route path="payments" element={<PaymentsTab />} />
           </Route>
 
           {/* Catch-all Redirect */}
